@@ -964,8 +964,8 @@
             <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
                 <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
                 <div style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff;">
-                    <!-- Canvas khusus cetak PDF diganti dengan IMG agar terbaca html2pdf, ditambahkan src kosong bawaan 1px transparan agar mencegah error -->
-                    <img id="pdf-cgChart-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" style="width: 500px; height: 500px; display: block; object-fit: contain; background-color: #ffffe0;" />
+                    <!-- Canvas khusus cetak PDF diganti dengan IMG agar terbaca html2pdf -->
+                    <img id="pdf-cgChart-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" style="width: 100%; max-width: 500px; height: auto; aspect-ratio: 1/1; display: block; margin: 0 auto; object-fit: contain; background-color: #ffffe0;" />
                 </div>
                 <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
                     <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
@@ -1493,11 +1493,19 @@
                 const sourceChart = document.getElementById('cgChart');
                 const pdfChartImg = document.getElementById('pdf-cgChart-img');
                 
-                // Konversi canvas yang ada di aplikasi menjadi gambar PNG secara instan
-                const dataUrl = sourceChart.toDataURL('image/png');
-                if (dataUrl && dataUrl !== 'data:,') {
-                    pdfChartImg.src = dataUrl;
+                try {
+                    // Gunakan format JPEG (Quality 0.8) agar background dipaksa solid dan ukurannya jauh lebih ringan untuk dicekam html2canvas
+                    const chartDataUrl = sourceChart.toDataURL('image/jpeg', 0.8);
+                    if (chartDataUrl && chartDataUrl.length > 50) {
+                        pdfChartImg.src = chartDataUrl;
+                    }
+                } catch (e) {
+                    console.error("Gagal menyalin grafik:", e);
                 }
+                
+                // Jeda 300ms yang SANGAT PENTING: memberi waktu browser menggambar ulang (repaint) 
+                // data Base64 gambar tersebut secara visual ke elemen DOM HTML sebelum mesin html2pdf mengambil foto cetakannya.
+                await new Promise(resolve => setTimeout(resolve, 300));
 
                 // --- 7. MENGISI TANDA TANGAN & LOGO (AUTO SIGNATURE DENGAN FETCH BASE64) ---
                 const signatures = {
@@ -1610,6 +1618,10 @@
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
             
             ctx.clearRect(0, 0, w, h);
+            
+            // Wajib mewarnai background kanvas agar tidak transparan saat diekspor ke PDF
+            ctx.fillStyle = '#ffffe0';
+            ctx.fillRect(0, 0, w, h);
 
             // Pengaturan Batas Skala
             const minMac = 12; // Sumbu X kiri
