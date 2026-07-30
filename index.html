@@ -141,27 +141,6 @@
 </head>
 <body class="antialiased min-h-screen p-4 sm:p-6 lg:max-w-4xl lg:mx-auto">
 
-    <!-- Top Action Bar -->
-    <div class="top-bar flex justify-between items-center mb-8">
-        <div class="flex gap-2.5">
-            <button class="bg-[#10b981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-lg">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                New Data
-            </button>
-            <button class="bg-[#6366f1] hover:bg-[#4f46e5] text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg">
-                History
-            </button>
-        </div>
-        <div class="flex gap-2.5">
-            <button class="bg-[#3b82f6] hover:bg-[#2563eb] text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg">
-                Sync
-            </button>
-            <button onclick="window.print()" class="bg-[#ef4444] hover:bg-[#dc2626] text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg">
-                Print
-            </button>
-        </div>
-    </div>
-
     <form id="wbForm">
         
         <!-- SECTION: FLIGHT DATA -->
@@ -544,28 +523,34 @@
                 </thead>
                 <tbody class="font-mono text-sm">
                     <tr>
-                        <td class="font-semibold text-gray-300">Total Crew</td>
-                        <td class="text-right"><input type="text" id="sumCrewWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="sumCrewArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="sumCrewMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
-                    </tr>
-                    <tr class="!bg-cyan-900/20">
-                        <td class="font-bold text-cyan-400">Operating Weight</td>
-                        <td class="text-right"><input type="text" id="opWt" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="opArm" class="app-input table-input app-input-readonly !text-cyan-400 !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="opMom" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="font-semibold text-gray-400 text-xs">Empty Weight</td>
+                        <td class="text-right"><input type="text" id="sumEwWt" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumEwArm" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumEwMom" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr>
-                        <td class="font-semibold text-gray-400 text-xs">Empty Wt</td>
-                        <td class="text-right"><input type="text" id="ewKgWt" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="ewKgArm" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="ewKgMom" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
+                        <td class="font-semibold text-gray-300">Operating Item (Crew + Tools)</td>
+                        <td class="text-right"><input type="text" id="sumOpItemWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumOpItemArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumOpItemMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr class="!bg-amber-900/20">
-                        <td class="font-bold text-amber-400">Dry Operating Wt</td>
+                        <td class="font-bold text-amber-400">Dry Operating Wt (DOW)</td>
                         <td class="text-right"><input type="text" id="dowWt" class="app-input table-input app-input-readonly !text-amber-400 font-bold !w-full" readonly placeholder="0"></td>
                         <td class="text-right"><input type="text" id="dowArm" class="app-input table-input app-input-readonly !text-amber-400 !w-full" readonly placeholder="0"></td>
                         <td class="text-right"><input type="text" id="dowMom" class="app-input table-input app-input-readonly !text-amber-400 font-bold !w-full" readonly placeholder="0"></td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold text-gray-300">Payload (Pax + Baggage)</td>
+                        <td class="text-right"><input type="text" id="sumPayloadWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumPayloadArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumPayloadMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                    </tr>
+                    <tr class="!bg-cyan-900/20">
+                        <td class="font-bold text-cyan-400">Zero Fuel Weight (ZFW)</td>
+                        <td class="text-right"><input type="text" id="sumZfwWt" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumZfwArm" class="app-input table-input app-input-readonly !text-cyan-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumZfwMom" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr>
                         <td class="font-semibold text-gray-300">Takeoff Fuel</td>
@@ -573,11 +558,23 @@
                         <td class="text-right"><input type="text" id="tofArm" class="app-input table-input !w-full" placeholder="0" value="6,260"></td>
                         <td class="text-right"><input type="text" id="tofMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
                     </tr>
+                    <tr class="!bg-purple-900/20">
+                        <td class="font-bold text-purple-400">Takeoff Weight (TOW)</td>
+                        <td class="text-right"><input type="text" id="sumTowWt" class="app-input table-input app-input-readonly !text-purple-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumTowArm" class="app-input table-input app-input-readonly !text-purple-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumTowMom" class="app-input table-input app-input-readonly !text-purple-400 font-bold !w-full" readonly placeholder="0"></td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold text-gray-300">Trip Fuel</td>
+                        <td class="text-right"><input type="text" id="sumTripFuelWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumTripFuelArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumTripFuelMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                    </tr>
                     <tr class="!bg-emerald-900/20">
-                        <td class="font-bold text-emerald-400">TOTAL OPERATING WT</td>
-                        <td class="text-right"><input type="text" id="totalOpWt" class="app-input table-input app-input-readonly !text-emerald-400 font-bold text-base !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="totalOpArm" class="app-input table-input app-input-readonly !text-emerald-400 !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="text" id="totalOpMom" class="app-input table-input app-input-readonly !text-emerald-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="font-bold text-emerald-400">Landing Weight (LDW)</td>
+                        <td class="text-right"><input type="text" id="sumLdwWt" class="app-input table-input app-input-readonly !text-emerald-400 font-bold text-base !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumLdwArm" class="app-input table-input app-input-readonly !text-emerald-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="sumLdwMom" class="app-input table-input app-input-readonly !text-emerald-400 font-bold !w-full" readonly placeholder="0"></td>
                     </tr>
                 </tbody>
             </table>
@@ -835,7 +832,17 @@
             function calculateSummaryData() {
                 const LBS_TO_KG = 0.45359237;
 
-                // 1. Crew Total
+                // --- 1. Empty Weight ---
+                const ewKg = parseFloat(document.getElementById('emptyWeight').value) || 0;
+                const ewMomRaw = document.getElementById('emptyMoment').value.replace(/,/g, '');
+                const ewMom = parseFloat(ewMomRaw) || 0;
+                const ewArm = ewKg > 0 ? (ewMom / ewKg) : 0;
+
+                document.getElementById('sumEwWt').value = ewKg > 0 ? ewKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumEwArm').value = ewKg > 0 ? ewArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumEwMom').value = ewKg > 0 ? ewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // --- 2. Operating Item (Crew + Tools) ---
                 let totalCrewWt = 0, totalCrewMom = 0;
                 document.querySelectorAll('.crew-row').forEach(row => {
                     const wt = parseFloat(row.querySelector('.crew-weight').value) || 0;
@@ -848,75 +855,30 @@
                     } else momOut.value = '';
                 });
 
-                document.getElementById('sumCrewWt').value = totalCrewWt > 0 ? totalCrewWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('sumCrewMom').value = totalCrewMom > 0 ? totalCrewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
-                document.getElementById('sumCrewArm').value = totalCrewWt > 0 ? (totalCrewMom / totalCrewWt).toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
-
-                // 2. Tools
                 const toolsWt = parseFloat(document.getElementById('toolsWt').value) || 0;
                 const toolsArm = 9970; 
                 const toolsMom = toolsWt * toolsArm;
                 document.getElementById('toolsMom').value = (toolsWt > 0) ? toolsMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
-                // 3. Operating Weight
-                const opWt = totalCrewWt + toolsWt;
-                const opMom = totalCrewMom + toolsMom;
-                const opArm = opWt > 0 ? opMom / opWt : 0;
-                
-                document.getElementById('opWt').value = opWt > 0 ? opWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('opMom').value = opWt > 0 ? opMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
-                document.getElementById('opArm').value = opWt > 0 ? opArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                const opItemWt = totalCrewWt + toolsWt;
+                const opItemMom = totalCrewMom + toolsMom;
+                const opItemArm = opItemWt > 0 ? opItemMom / opItemWt : 0;
 
-                // 4. Empty Wt (Kg) - Use Manual Moment directly (tanpa konversi LBS)
-                const ewKg = parseFloat(document.getElementById('emptyWeight').value) || 0;
-                const ewMomRaw = document.getElementById('emptyMoment').value.replace(/,/g, '');
-                const ewMom = parseFloat(ewMomRaw) || 0;
-                const ewArm = ewKg > 0 ? (ewMom / ewKg) : 0;
+                document.getElementById('sumOpItemWt').value = opItemWt > 0 ? opItemWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumOpItemArm').value = opItemWt > 0 ? opItemArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumOpItemMom').value = opItemWt > 0 ? opItemMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
-                document.getElementById('ewKgWt').value = ewKg > 0 ? ewKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('ewKgArm').value = ewKg > 0 ? ewArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
-                document.getElementById('ewKgMom').value = ewKg > 0 ? ewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
-
-                // 5. Dry Operating Weight
-                const dowWt = opWt + ewKg;
-                const dowMom = opMom + ewMom;
+                // --- 3. Dry Operating Weight (DOW) ---
+                const dowWt = ewKg + opItemWt;
+                const dowMom = ewMom + opItemMom;
                 const dowArm = dowWt > 0 ? dowMom / dowWt : 0;
 
                 document.getElementById('dowWt').value = dowWt > 0 ? dowWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('dowMom').value = dowWt > 0 ? dowMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('dowArm').value = dowWt > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('dowMom').value = dowWt > 0 ? dowMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
-                // 6. Takeoff Fuel
-                // Fuel on board (lbs) - Start Engine (lbs), lalu di convert ke kg
-                const fobLbs = parseFloat(document.getElementById('fob').value) || 0;
-                const startFuelLbs = parseFloat(document.getElementById('startFuel').value) || 100;
-                
-                // Takeoff Fuel dalam LBS
-                const tofLbs = fobLbs > 0 ? Math.max(0, fobLbs - startFuelLbs) : 0;
-                
-                // Convert ke KG
-                const tofKg = tofLbs * LBS_TO_KG;
-                
-                // Menghapus koma sebelum melakukan kalkulasi matematika
-                const rawTofArm = document.getElementById('tofArm').value.replace(/,/g, '');
-                const tofArm = parseFloat(rawTofArm) || 0;
-                const tofMom = tofKg * tofArm;
-
-                document.getElementById('tofKgWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('tofMom').value = (tofKg > 0 && tofArm > 0) ? tofMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
-
-                // 7. Total Op Weight
-                const totalOpWt = dowWt + tofKg;
-                const totalOpMom = dowMom + tofMom;
-                const totalOpArm = totalOpWt > 0 ? totalOpMom / totalOpWt : 0;
-
-                document.getElementById('totalOpWt').value = totalOpWt > 0 ? totalOpWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
-                document.getElementById('totalOpMom').value = totalOpWt > 0 ? totalOpMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
-                document.getElementById('totalOpArm').value = totalOpWt > 0 ? totalOpArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
-
-                // 8. Limitation & % MAC Calculation
-                // Calculate Traffic Load (Pax + Baggage Weight & Moment)
-                let totalPaxWt = 0, totalPaxMom = 0;
+                // --- 4. Payload (Pax + Baggage) ---
+                let payloadWt = 0, payloadMom = 0;
                 paxRows.forEach(row => {
                     const inputs = row.querySelectorAll('.table-input');
                     const paxWeight = parseFloat(inputs[0].value) || 0;
@@ -924,17 +886,27 @@
                     const arm = parseFloat(row.dataset.arm) || 0;
                     const rowWt = paxWeight + bagWeight;
                     if (rowWt > 0) {
-                        totalPaxWt += rowWt;
-                        totalPaxMom += (rowWt * arm);
+                        payloadWt += rowWt;
+                        payloadMom += (rowWt * arm);
                     }
                 });
+                const payloadArm = payloadWt > 0 ? payloadMom / payloadWt : 0;
+                
+                document.getElementById('sumPayloadWt').value = payloadWt > 0 ? payloadWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumPayloadArm').value = payloadWt > 0 ? payloadArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumPayloadMom').value = payloadWt > 0 ? payloadMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
-                // ZFW = DOW + Payload (Pax & Baggage)
-                const zfwWt = dowWt + totalPaxWt;
-                const zfwMom = dowMom + totalPaxMom;
+                // --- 5. Zero Fuel Weight (ZFW) ---
+                const zfwWt = dowWt + payloadWt;
+                const zfwMom = dowMom + payloadMom;
                 const zfwArm = zfwWt > 0 ? zfwMom / zfwWt : 0;
                 const zfwMac = zfwArm > 0 ? ((zfwArm - 5445) / 2246) * 100 : 0;
 
+                document.getElementById('sumZfwWt').value = zfwWt > 0 ? zfwWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumZfwArm').value = zfwWt > 0 ? zfwArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumZfwMom').value = zfwWt > 0 ? zfwMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // Update Limitation Section ZFW
                 document.getElementById('limDowWt').value = dowWt > 0 ? dowWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('limDowArm').value = dowArm > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('zfwWt').value = zfwWt > 0 ? zfwWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
@@ -942,12 +914,30 @@
                 document.getElementById('zfwMac').value = zfwMac > 0 ? zfwMac.toFixed(2) : '';
                 document.getElementById('zfwMacRes').value = zfwMac > 0 ? zfwMac.toFixed(2) : '';
 
-                // TOW = ZFW + Takeoff Fuel
+                // --- 6. Takeoff Fuel (TOF) ---
+                const fobLbs = parseFloat(document.getElementById('fob').value) || 0;
+                const startFuelLbs = parseFloat(document.getElementById('startFuel').value) || 100;
+                const tofLbs = fobLbs > 0 ? Math.max(0, fobLbs - startFuelLbs) : 0;
+                const tofKg = tofLbs * LBS_TO_KG;
+                
+                const rawTofArm = document.getElementById('tofArm').value.replace(/,/g, '');
+                const tofArm = parseFloat(rawTofArm) || 0;
+                const tofMom = tofKg * tofArm;
+
+                document.getElementById('tofKgWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('tofMom').value = (tofKg > 0 && tofArm > 0) ? tofMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // --- 7. Takeoff Weight (TOW) ---
                 const towWt = zfwWt + tofKg;
                 const towMom = zfwMom + tofMom;
                 const towArm = towWt > 0 ? towMom / towWt : 0;
                 const towMac = towArm > 0 ? ((towArm - 5445) / 2246) * 100 : 0;
 
+                document.getElementById('sumTowWt').value = towWt > 0 ? towWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumTowArm').value = towWt > 0 ? towArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumTowMom').value = towWt > 0 ? towMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // Update Limitation Section TOW
                 document.getElementById('limToFuelWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('limToFuelArm').value = tofArm > 0 ? tofArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('towWt').value = towWt > 0 ? towWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
@@ -955,16 +945,26 @@
                 document.getElementById('towMac').value = towMac > 0 ? towMac.toFixed(2) : '';
                 document.getElementById('towMacRes').value = towMac > 0 ? towMac.toFixed(2) : '';
 
-                // LDW = TOW - Trip Fuel
+                // --- 8. Trip Fuel ---
                 const tripFuelKg = parseFloat(tripFuelOutput.value) || 0;
-                const tripFuelArm = tofArm > 0 ? tofArm : 6260;
+                const tripFuelArm = tofArm > 0 ? tofArm : 6260; // Mengambil arm dari TOF sesuai instruksi
                 const tripFuelMom = tripFuelKg * tripFuelArm;
+                
+                document.getElementById('sumTripFuelWt').value = tripFuelKg > 0 ? tripFuelKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumTripFuelArm').value = tripFuelKg > 0 ? tripFuelArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumTripFuelMom').value = tripFuelKg > 0 ? tripFuelMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
+                // --- 9. Landing Weight (LDW) ---
                 const ldwWt = towWt - tripFuelKg;
                 const ldwMom = towMom - tripFuelMom;
                 const ldwArm = ldwWt > 0 ? ldwMom / ldwWt : 0;
                 const ldwMac = ldwArm > 0 ? ((ldwArm - 5445) / 2246) * 100 : 0;
 
+                document.getElementById('sumLdwWt').value = ldwWt > 0 ? ldwWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumLdwArm').value = ldwWt > 0 ? ldwArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('sumLdwMom').value = ldwWt > 0 ? ldwMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // Update Limitation Section LDW
                 document.getElementById('limTripFuelWt').value = tripFuelKg > 0 ? tripFuelKg.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('limTripFuelArm').value = tripFuelArm > 0 ? tripFuelArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('ldwWt').value = ldwWt > 0 ? ldwWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
@@ -972,7 +972,7 @@
                 document.getElementById('ldwMac').value = ldwMac > 0 ? ldwMac.toFixed(2) : '';
                 document.getElementById('ldwMacRes').value = ldwMac > 0 ? ldwMac.toFixed(2) : '';
 
-                // Check Limits
+                // --- Limits Check ---
                 const maxZfw = parseFloat(document.getElementById('maxZfw').value) || 7100;
                 const maxTow = parseFloat(document.getElementById('maxTow').value) || 7700;
                 const maxLdw = parseFloat(document.getElementById('maxLdw').value) || 7450;
