@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASA 212-200 Weight & Balance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617; /* Slate 950 */
+            background-image: radial-gradient(ellipse at top, #0f172a, #020617), 
+                              repeating-linear-gradient(to right, transparent 0, transparent 49px, rgba(255,255,255,0.02) 50px);
+            color: #cbd5e1;
+        }
+        
+        /* Custom Scrollbar for Dark Mode */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Aviation Standard Input Fields - Smoother Design */
+        .input-field {
+            @apply mt-1.5 block w-full rounded-2xl border border-white/10 bg-slate-900/40 text-cyan-400 shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)] backdrop-blur-md focus:bg-slate-900/80 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-500/15 sm:text-sm p-2.5 transition-all duration-300 outline-none font-mono font-medium hover:bg-slate-900/60 hover:border-white/20;
+        }
+        .readonly-field {
+            @apply bg-slate-800/30 text-emerald-400 cursor-not-allowed border-white/5 shadow-none hover:bg-slate-800/30 hover:border-white/5;
+        }
+        
+        /* Glassmorphism & Glossy Card Container - Smoother Edges */
+        .card-container {
+            @apply relative bg-slate-800/20 backdrop-blur-xl rounded-3xl shadow-[0_16px_40px_rgba(0,0,0,0.3)] border border-white/10 overflow-hidden transition-all duration-300;
+        }
+        /* Glossy top edge highlight */
+        .card-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.15), rgba(255,255,255,0));
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .card-header {
+            @apply p-5 border-b border-white/5 flex items-center gap-4 bg-gradient-to-b from-white/5 to-transparent;
+        }
+        .card-title {
+            @apply font-bold text-slate-100 text-sm tracking-widest uppercase;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        .icon-box {
+            @apply p-2.5 rounded-xl bg-slate-900/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/10 backdrop-blur-sm;
+        }
+        
+        /* Fix for select dropdown arrow in dark mode */
+        select.input-field {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Standardized Labels */
+        .label-text {
+            @apply block text-[11px] font-bold text-slate-400 uppercase tracking-widest;
+        }
+
+        /* Print Mode: Revert to Light for Ink Saving */
+        @media print {
+            body { background: white !important; color: black !important; background-image: none !important; }
+            .card-container { background: white !important; border: 1px solid #ccc !important; box-shadow: none !important; filter: none !important; backdrop-filter: none !important; }
+            .card-header { background: #f8f9fa !important; border-bottom: 2px solid #000 !important; }
+            .card-title, .label-text { color: black !important; text-shadow: none !important; }
+            .input-field, .readonly-field { background: transparent !important; color: black !important; border: 1px solid #999 !important; box-shadow: none !important; }
+            .icon-box { display: none !important; }
+            header svg, button { display: none !important; }
+            table th { background: #f8f9fa !important; color: black !important; border: 1px solid #000 !important; }
+            table td { border: 1px solid #ccc !important; color: black !important; }
+            .text-cyan-400, .text-emerald-400, .text-amber-400 { color: black !important; }
+        }
+    </style>
+</head>
+<body class="antialiased py-6 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col">
+
+    <div class="max-w-6xl mx-auto w-full flex-grow">
+        <header class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-gradient-to-br from-cyan-400 to-cyan-700 p-3.5 rounded-2xl shadow-[0_8px_20px_rgba(6,182,212,0.3)] border border-cyan-300/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-wider uppercase drop-shadow-md">Loadsheet & Balance</h1>
+                    <p class="text-sm text-cyan-400 font-mono mt-1 tracking-widest">CASA 212-200 EFB SYSTEM</p>
+                </div>
+            </div>
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]">
+                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span id="currentDateDisplay" class="text-sm font-mono font-bold text-slate-200 tracking-wider"></span>
+            </div>
+        </header>
+
+        <form id="wbForm" class="space-y-6">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <div class="card-container lg:col-span-7">
+                    <div class="card-header">
+                        <div class="icon-box text-cyan-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </div>
+                        <h2 class="card-title">Flight Data Entry</h2>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="label-text">Date</label>
+                            <input type="date" id="flightDate" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="label-text">Noreg</label>
+                            <select id="noreg" class="input-field">
+                                <option value="">SELECT...</option>
+                                <option value="PK-TWW">PK-TWW</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label-text">Aircraft Type</label>
+                            <input type="text" id="acType" class="input-field readonly-field" readonly placeholder="AUTO-FILLED">
+                        </div>
+                        <div>
+                            <label class="label-text">Customer</label>
+                            <select id="customer" class="input-field">
+                                <option value="">SELECT...</option>
+                                <option value="Artha Graha Network">ARTHA GRAHA NETWORK</option>
+                                <option value="Other">OTHER</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label-text">From</label>
+                            <input type="text" id="depFrom" class="input-field uppercase" placeholder="ICAO/IATA">
+                        </div>
+                        <div>
+                            <label class="label-text">Destination</label>
+                            <input type="text" id="arrDest" class="input-field uppercase" placeholder="ICAO/IATA">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container lg:col-span-5">
+                    <div class="card-header">
+                        <div class="icon-box text-amber-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        </div>
+                        <h2 class="card-title">Fuel System</h2>
+                    </div>
+                    <div class="p-6 space-y-5 bg-slate-900/30">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="label-text">Flight Time <span class="text-slate-500 normal-case tracking-normal">(HH:MM)</span></label>
+                                <input type="time" id="flightTime" class="input-field" required>
+                            </div>
+                            <div>
+                                <label class="label-text">Start Engine Fuel</label>
+                                <select id="startFuel" class="input-field">
+                                    <option value="100">100 Lbs</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="label-text">Fuel on Board</label>
+                                <div class="relative">
+                                    <input type="number" id="fob" class="input-field pr-12" placeholder="0" min="0">
+                                    <span class="absolute top-1/2 -translate-y-1/2 right-3 text-cyan-600 text-xs font-bold pointer-events-none">Lbs</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label-text !text-fuchsia-400">Trip Fuel</label>
+                                <div class="relative">
+                                    <input type="text" id="tripFuel" class="input-field readonly-field !text-fuchsia-400 pr-12" readonly placeholder="AUTO">
+                                    <span class="absolute top-1/2 -translate-y-1/2 right-3 text-fuchsia-600/70 text-xs font-bold pointer-events-none">Lbs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-700/60">
+                            <label class="label-text !text-emerald-400 mb-2">Expected Landing Fuel</label>
+                            <div class="relative">
+                                <input type="text" id="landingFuel" class="input-field readonly-field !bg-emerald-900/10 !border-emerald-500/50 !text-emerald-400 text-xl font-bold pr-12" readonly placeholder="CALCULATED">
+                                <span class="absolute top-1/2 -translate-y-1/2 right-4 text-emerald-600/70 font-bold pointer-events-none">Lbs</span>
+                            </div>
+                            <!-- Aviation Style Alert -->
+                            <div id="fuelWarning" class="mt-3 flex items-start gap-3 p-3 bg-red-950/50 border border-red-500/50 rounded-lg text-red-400 text-xs font-mono font-medium hidden shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                                <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span><strong>WARN:</strong> LANDING FUEL NEGATIVE. CHECK FOB OR TIME.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Crew Data -->
+                <div class="card-container lg:col-span-8 flex flex-col">
+                    <div class="card-header">
+                        <div class="icon-box text-purple-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <h2 class="card-title">Crew Manifest <span class="text-xs font-mono text-slate-500 ml-2">(KG)</span></h2>
+                    </div>
+                    
+                    <div class="overflow-x-auto flex-grow bg-slate-900/30">
+                        <div class="inline-block min-w-full align-middle">
+                            <table class="min-w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-800/80 border-b border-slate-700">
+                                        <th class="py-3 px-5 label-text w-24">Pos</th>
+                                        <th class="py-3 px-5 label-text min-w-[200px]">Name</th>
+                                        <th class="py-3 px-5 label-text w-32 md:w-40 text-right">Weight (Kg)</th>
+                                        <th class="py-3 px-5 label-text w-32 text-right">Arm</th>
+                                        <th class="py-3 px-5 label-text min-w-[150px] text-right">Moment</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-700/50">
+                                    <tr class="hover:bg-slate-800/50 transition-colors crew-row group" data-arm="2000">
+                                        <td class="py-2 px-5 font-bold text-slate-300">PIC</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field !mt-0 uppercase" placeholder="NAME"></td>
+                                        <td class="py-2 px-5"><input type="number" class="input-field !mt-0 crew-weight text-right" placeholder="0" min="0"></td>
+                                        <td class="py-2 px-5 font-medium text-slate-500 text-right">2,000</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right crew-moment font-bold" readonly placeholder="0"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/50 transition-colors crew-row group" data-arm="2000">
+                                        <td class="py-2 px-5 font-bold text-slate-300">SIC</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field !mt-0 uppercase" placeholder="NAME"></td>
+                                        <td class="py-2 px-5"><input type="number" class="input-field !mt-0 crew-weight text-right" placeholder="0" min="0"></td>
+                                        <td class="py-2 px-5 font-medium text-slate-500 text-right">2,000</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right crew-moment font-bold" readonly placeholder="0"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/50 transition-colors crew-row group" data-arm="2400">
+                                        <td class="py-2 px-5 font-bold text-slate-300">EOB 1</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field !mt-0 uppercase" placeholder="NAME"></td>
+                                        <td class="py-2 px-5"><input type="number" class="input-field !mt-0 crew-weight text-right" placeholder="0" min="0"></td>
+                                        <td class="py-2 px-5 font-medium text-slate-500 text-right">2,400</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right crew-moment font-bold" readonly placeholder="0"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/50 transition-colors crew-row group" data-arm="8840">
+                                        <td class="py-2 px-5 font-bold text-slate-300">EOB 2</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field !mt-0 uppercase" placeholder="NAME"></td>
+                                        <td class="py-2 px-5"><input type="number" class="input-field !mt-0 crew-weight text-right" placeholder="0" min="0"></td>
+                                        <td class="py-2 px-5 font-medium text-slate-500 text-right">8,840</td>
+                                        <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right crew-moment font-bold" readonly placeholder="0"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-slate-800/80 to-slate-800/40 border-t border-slate-700 flex justify-between items-center mt-auto">
+                        <label class="label-text !text-white">Total Persons on Board</label>
+                        <div class="relative w-24">
+                            <input type="number" id="totalPOB" class="input-field !mt-0 !text-white !bg-slate-900 border-slate-600 text-center text-lg shadow-[0_0_10px_rgba(255,255,255,0.1)]" placeholder="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty Weight -->
+                <div class="card-container lg:col-span-4">
+                    <div class="card-header">
+                        <div class="icon-box text-slate-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                        </div>
+                        <h2 class="card-title">Empty Weight Index</h2>
+                    </div>
+                    <div class="p-6 space-y-5 bg-slate-900/30 h-full flex flex-col justify-center">
+                        <div>
+                            <label class="label-text">Weight <span class="text-slate-500 normal-case tracking-normal">(Lbs)</span></label>
+                            <input type="number" id="emptyWeight" class="input-field text-right" placeholder="10037" min="0" step="0.1">
+                        </div>
+                        <div>
+                            <label class="label-text">Arm <span class="text-slate-500 normal-case tracking-normal">(inches)</span></label>
+                            <input type="number" id="emptyArm" class="input-field text-right" placeholder="150.5" step="0.01">
+                        </div>
+                        
+                        <hr class="border-slate-700/80 my-2">
+                        
+                        <div>
+                            <label class="label-text !text-amber-400 mb-2">Total Moment</label>
+                            <input type="text" id="emptyMoment" class="input-field readonly-field !text-amber-400 !border-amber-500/30 !bg-amber-900/10 text-xl font-bold text-right shadow-[0_0_15px_rgba(251,191,36,0.1)]" readonly placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-container flex flex-col mt-6">
+                <div class="card-header">
+                    <div class="icon-box text-pink-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <h2 class="card-title">Passenger Loading <span class="text-xs font-mono text-slate-500 ml-2">(KG)</span></h2>
+                </div>
+                
+                <div class="overflow-x-auto flex-grow p-0 bg-slate-900/40">
+                    <div class="inline-block min-w-full align-middle">
+                        <table class="min-w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800/80 border-b border-slate-700">
+                                    <th class="py-3 px-5 label-text w-32 border-r border-slate-700/50">Seat</th>
+                                    <th class="py-3 px-5 label-text min-w-[150px]">Pax Wght</th>
+                                    <th class="py-3 px-5 label-text min-w-[150px]">Baggage</th>
+                                    <th class="py-3 px-5 label-text w-32 border-l border-slate-700/50 text-right">Arm</th>
+                                    <th class="py-3 px-5 label-text min-w-[150px] text-right">Moment</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50 font-mono text-sm">
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="3580">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.1R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">3,580</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="4310">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.2R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">4,310</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="4915">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.3R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">4,915</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="5645">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.3L</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">5,645</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="6400">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.4R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">6,400</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="6400">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.4L</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">6,400</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="7120">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.5R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">7,120</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="7120">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.5L</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">7,120</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="7850">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.6R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">7,850</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="7850">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.6L</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">7,850</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors pax-row group" data-arm="7900">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50 group-hover:text-cyan-400">Row.7R</td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5"><input type="number" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 font-medium text-slate-500 text-right border-l border-slate-700/50">7,900</td>
+                                    <td class="py-2 px-5"><input type="text" class="input-field readonly-field !mt-0 text-right font-bold pax-moment !text-white" readonly placeholder="0"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-container flex flex-col mt-6">
+                <div class="card-header">
+                    <div class="icon-box text-blue-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h2 class="card-title">Operating Data Summary <span class="text-xs font-mono text-slate-500 ml-2">(KG & MOMENT)</span></h2>
+                </div>
+                
+                <div class="overflow-x-auto flex-grow p-0 bg-slate-900/40">
+                    <div class="inline-block min-w-full align-middle">
+                        <table class="min-w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800/80 border-b border-slate-700">
+                                    <th class="py-3 px-5 label-text min-w-[200px] border-r border-slate-700/50">Item</th>
+                                    <th class="py-3 px-5 label-text w-40 text-right">Weight (Kg)</th>
+                                    <th class="py-3 px-5 label-text w-40 text-right border-l border-slate-700/50">Arm</th>
+                                    <th class="py-3 px-5 label-text min-w-[150px] text-right">Moment</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50 font-mono text-sm">
+                                <tr class="hover:bg-slate-800/50 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50">Total Crew</td>
+                                    <td class="py-2 px-5"><input type="text" id="sumCrewWt" class="input-field readonly-field !mt-0 text-right font-bold text-white" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-slate-700/50"><input type="text" id="sumCrewArm" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="sumCrewMom" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50">Tools / Equipment</td>
+                                    <td class="py-2 px-5"><input type="number" id="toolsWt" class="input-field !mt-0 text-right" placeholder="0" min="0"></td>
+                                    <td class="py-2 px-5 border-l border-slate-700/50 font-medium text-slate-500 text-right">9,970</td>
+                                    <td class="py-2 px-5"><input type="text" id="toolsMom" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="bg-slate-800/60 hover:bg-slate-800/80 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-cyan-400 border-r border-cyan-700/30">Operating Weight <span class="text-[10px] text-cyan-400/70 block leading-tight normal-case">(Crew + Tools)</span></td>
+                                    <td class="py-2 px-5"><input type="text" id="opWt" class="input-field readonly-field !mt-0 text-right font-bold text-cyan-400 !border-cyan-500/30" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-cyan-700/30"><input type="text" id="opArm" class="input-field readonly-field !mt-0 text-right text-cyan-400 !border-cyan-500/30" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="opMom" class="input-field readonly-field !mt-0 text-right font-bold text-cyan-400 !border-cyan-500/30" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50">Empty Weight <span class="text-[10px] text-slate-500 block leading-tight normal-case">(Converted to Kg)</span></td>
+                                    <td class="py-2 px-5"><input type="text" id="ewKgWt" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-slate-700/50"><input type="text" id="ewKgArm" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="ewKgMom" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="bg-amber-900/20 hover:bg-amber-900/40 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-amber-400 border-r border-amber-700/30">Dry Operating Weight <span class="text-[10px] text-amber-400/70 block leading-tight normal-case">(Empty + Operating)</span></td>
+                                    <td class="py-2 px-5"><input type="text" id="dowWt" class="input-field readonly-field !mt-0 text-right font-bold text-amber-400 !border-amber-500/30 !bg-amber-900/10" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-amber-700/30"><input type="text" id="dowArm" class="input-field readonly-field !mt-0 text-right text-amber-400 !border-amber-500/30 !bg-amber-900/10" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="dowMom" class="input-field readonly-field !mt-0 text-right font-bold text-amber-400 !border-amber-500/30 !bg-amber-900/10" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-slate-400 bg-slate-800/30 border-r border-slate-700/50">Takeoff Fuel <span class="text-[10px] text-slate-500 block leading-tight normal-case">(FOB Converted to Kg)</span></td>
+                                    <td class="py-2 px-5"><input type="text" id="tofKgWt" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-slate-700/50"><input type="number" id="tofArm" class="input-field !mt-0 text-right" placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="tofMom" class="input-field readonly-field !mt-0 text-right" readonly placeholder="0"></td>
+                                </tr>
+                                <tr class="bg-emerald-900/20 hover:bg-emerald-900/40 transition-colors group">
+                                    <td class="py-2 px-5 font-bold text-emerald-400 border-r border-emerald-700/30">TOTAL OPERATING WEIGHT <span class="text-[10px] text-emerald-400/70 block leading-tight normal-case">(DOW + Takeoff Fuel)</span></td>
+                                    <td class="py-2 px-5"><input type="text" id="totalOpWt" class="input-field readonly-field !mt-0 text-right font-bold text-emerald-400 !border-emerald-500/50 !bg-emerald-900/20" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5 border-l border-emerald-700/30"><input type="text" id="totalOpArm" class="input-field readonly-field !mt-0 text-right text-emerald-400 !border-emerald-500/50 !bg-emerald-900/20" readonly placeholder="0"></td>
+                                    <td class="py-2 px-5"><input type="text" id="totalOpMom" class="input-field readonly-field !mt-0 text-right font-bold text-emerald-400 !border-emerald-500/50 !bg-emerald-900/20" readonly placeholder="0"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-8 pb-10">
+                <button type="button" onclick="window.print()" class="px-8 py-3.5 bg-gradient-to-br from-cyan-500 to-cyan-700 text-white rounded-2xl hover:from-cyan-400 hover:to-cyan-600 focus:ring-4 focus:ring-cyan-500/30 font-bold tracking-wider uppercase transition-all duration-300 shadow-[0_8px_20px_rgba(6,182,212,0.3)] border border-cyan-400/50 hover:shadow-[0_12px_25px_rgba(6,182,212,0.5)] hover:-translate-y-1 flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print Loadsheet
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Set Date today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('flightDate').value = today;
+            
+            // Format nice date for header
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', dateOptions).toUpperCase();
+
+            // DOM Elements
+            const noregSelect = document.getElementById('noreg');
+            const acTypeInput = document.getElementById('acType');
+            
+            const flightTimeInput = document.getElementById('flightTime');
+            const fobInput = document.getElementById('fob');
+            const startFuelSelect = document.getElementById('startFuel');
+            
+            const tripFuelOutput = document.getElementById('tripFuel');
+            const landingFuelOutput = document.getElementById('landingFuel');
+            const fuelWarning = document.getElementById('fuelWarning');
+
+            const emptyWeightInput = document.getElementById('emptyWeight');
+            const emptyArmInput = document.getElementById('emptyArm');
+            const emptyMomentOutput = document.getElementById('emptyMoment');
+
+            const crewWeightInputs = document.querySelectorAll('.crew-weight');
+            const totalPobInput = document.getElementById('totalPOB');
+            
+            const paxRows = document.querySelectorAll('.pax-row');
+
+            // 1. Logic for Auto Aircraft Type
+            noregSelect.addEventListener('change', function() {
+                if(this.value === 'PK-TWW') {
+                    acTypeInput.value = 'C212-200';
+                } else {
+                    acTypeInput.value = '';
+                }
+            });
+
+            // 2. Logic for Fuel Calculation
+            function calculateFuel() {
+                const flightTimeVal = flightTimeInput.value;
+                const fobVal = parseFloat(fobInput.value) || 0;
+                const startFuelVal = parseFloat(startFuelSelect.value) || 100;
+                
+                let tripFuelLbs = 0;
+
+                if (flightTimeVal) {
+                    const [hours, minutes] = flightTimeVal.split(':');
+                    const totalMinutes = (parseInt(hours, 10) * 60) + parseInt(minutes, 10);
+                    
+                    // Fuel consumption = 600 lbs/hr => 10 lbs/min
+                    tripFuelLbs = totalMinutes * 10;
+                    tripFuelOutput.value = tripFuelLbs.toFixed(0);
+                } else {
+                    tripFuelOutput.value = '';
+                }
+
+                // Landing Fuel = FOB - Trip Fuel - Start Engine Fuel
+                if (fobInput.value !== '') {
+                    const landingFuel = fobVal - tripFuelLbs - startFuelVal;
+                    landingFuelOutput.value = landingFuel.toFixed(0);
+                    
+                    // Handle Warning Style in Dark Theme
+                    if (landingFuel < 0) {
+                        landingFuelOutput.classList.add('!bg-red-950/50', '!text-red-400', '!border-red-500/50');
+                        landingFuelOutput.classList.remove('!bg-emerald-900/10', '!text-emerald-400', '!border-emerald-500/50');
+                        fuelWarning.classList.remove('hidden');
+                    } else {
+                        landingFuelOutput.classList.remove('!bg-red-950/50', '!text-red-400', '!border-red-500/50');
+                        landingFuelOutput.classList.add('!bg-emerald-900/10', '!text-emerald-400', '!border-emerald-500/50');
+                        fuelWarning.classList.add('hidden');
+                    }
+                } else {
+                    landingFuelOutput.value = '';
+                    fuelWarning.classList.add('hidden');
+                }
+                
+                if (typeof calculateSummaryData === 'function') {
+                    calculateSummaryData();
+                }
+            }
+
+            flightTimeInput.addEventListener('input', calculateFuel);
+            fobInput.addEventListener('input', calculateFuel);
+            startFuelSelect.addEventListener('change', calculateFuel);
+
+            // 3. Logic for Empty Moment
+            function calculateEmptyMoment() {
+                const weight = parseFloat(emptyWeightInput.value) || 0;
+                const arm = parseFloat(emptyArmInput.value) || 0;
+                
+                if (emptyWeightInput.value !== '' && emptyArmInput.value !== '') {
+                    const moment = weight * arm;
+                    emptyMomentOutput.value = moment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    emptyMomentOutput.value = '';
+                }
+                
+                if (typeof calculateSummaryData === 'function') {
+                    calculateSummaryData();
+                }
+            }
+
+            emptyWeightInput.addEventListener('input', calculateEmptyMoment);
+            emptyArmInput.addEventListener('input', calculateEmptyMoment);
+
+            // 4. Logic for POB & Passenger Moment Calculation
+            function calculatePaxAndPOB() {
+                let pobCount = 0;
+                
+                // Count Crew
+                crewWeightInputs.forEach(input => {
+                    const weight = parseFloat(input.value);
+                    if (!isNaN(weight) && weight > 0) {
+                        pobCount++;
+                    }
+                });
+
+                // Compute Passenger Moments and Count Pax
+                paxRows.forEach(row => {
+                    const weightInput = row.querySelectorAll('.input-field')[0]; // Pax Weight
+                    const bagInput = row.querySelectorAll('.input-field')[1]; // Baggage
+                    const momentOutput = row.querySelector('.pax-moment');
+                    
+                    const arm = parseFloat(row.dataset.arm);
+                    const paxWeight = parseFloat(weightInput.value);
+                    const bagWeight = parseFloat(bagInput.value) || 0;
+                    
+                    // Increment POB if Pax is seated
+                    if (!isNaN(paxWeight) && paxWeight > 0) {
+                        pobCount++;
+                    }
+
+                    const totalWeightForRow = (isNaN(paxWeight) ? 0 : paxWeight) + bagWeight;
+                    
+                    if (totalWeightForRow > 0) {
+                        const moment = totalWeightForRow * arm;
+                        momentOutput.value = moment.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    } else {
+                        momentOutput.value = '';
+                    }
+                });
+
+                // Update Total POB
+                if (document.activeElement !== totalPobInput) {
+                     totalPobInput.value = pobCount > 0 ? pobCount : '';
+                }
+                
+                if (typeof calculateSummaryData === 'function') {
+                    calculateSummaryData();
+                }
+            }
+
+            crewWeightInputs.forEach(input => {
+                input.addEventListener('input', calculatePaxAndPOB);
+            });
+            
+            paxRows.forEach(row => {
+                const weightInput = row.querySelectorAll('.input-field')[0];
+                const bagInput = row.querySelectorAll('.input-field')[1];
+                weightInput.addEventListener('input', calculatePaxAndPOB);
+                bagInput.addEventListener('input', calculatePaxAndPOB);
+            });
+            
+            // 5. Logic for Operating Data Summary
+            function calculateSummaryData() {
+                const LBS_TO_KG = 0.45359237;
+
+                // 1. Crew Total
+                let totalCrewWt = 0;
+                let totalCrewMom = 0;
+                const crewRows = document.querySelectorAll('.crew-row');
+                crewRows.forEach(row => {
+                    const wt = parseFloat(row.querySelector('.crew-weight').value) || 0;
+                    const arm = parseFloat(row.dataset.arm) || 0;
+                    const momOut = row.querySelector('.crew-moment');
+                    if (wt > 0 && arm > 0) {
+                        const mom = wt * arm;
+                        momOut.value = mom.toLocaleString('en-US', {maximumFractionDigits: 0});
+                        totalCrewWt += wt;
+                        totalCrewMom += mom;
+                    } else if (wt > 0) {
+                        momOut.value = '';
+                        totalCrewWt += wt;
+                    } else {
+                        momOut.value = '';
+                    }
+                });
+
+                document.getElementById('sumCrewWt').value = totalCrewWt > 0 ? totalCrewWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('sumCrewMom').value = totalCrewMom > 0 ? totalCrewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('sumCrewArm').value = totalCrewWt > 0 ? (totalCrewMom / totalCrewWt).toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+
+                // 2. Tools
+                const toolsWt = parseFloat(document.getElementById('toolsWt').value) || 0;
+                const toolsArm = 9970; // Fixed according to specs
+                const toolsMom = toolsWt * toolsArm;
+                document.getElementById('toolsMom').value = (toolsWt > 0 && toolsArm > 0) ? toolsMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // 3. Operating Weight (Crew + Tools)
+                const opWt = totalCrewWt + toolsWt;
+                const opMom = totalCrewMom + toolsMom;
+                const opArm = opWt > 0 ? opMom / opWt : 0;
+                
+                document.getElementById('opWt').value = opWt > 0 ? opWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('opMom').value = opWt > 0 ? opMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('opArm').value = opWt > 0 ? opArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+
+                // 4. Empty Weight (Converted to Kg)
+                const ewLbs = parseFloat(document.getElementById('emptyWeight').value) || 0;
+                const ewArm = parseFloat(document.getElementById('emptyArm').value) || 0;
+                const ewKg = ewLbs * LBS_TO_KG;
+                const ewMom = ewKg * ewArm;
+
+                document.getElementById('ewKgWt').value = ewKg > 0 ? ewKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('ewKgArm').value = ewKg > 0 ? ewArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+                document.getElementById('ewKgMom').value = ewKg > 0 ? ewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // 5. Dry Operating Weight
+                const dowWt = opWt + ewKg;
+                const dowMom = opMom + ewMom;
+                const dowArm = dowWt > 0 ? dowMom / dowWt : 0;
+
+                document.getElementById('dowWt').value = dowWt > 0 ? dowWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('dowMom').value = dowWt > 0 ? dowMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('dowArm').value = dowWt > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+
+                // 6. Takeoff Fuel
+                const fobLbs = parseFloat(document.getElementById('fob').value) || 0;
+                const tofKg = fobLbs * LBS_TO_KG;
+                const tofArm = parseFloat(document.getElementById('tofArm').value) || 0;
+                const tofMom = tofKg * tofArm;
+
+                document.getElementById('tofKgWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('tofMom').value = (tofKg > 0 && tofArm > 0) ? tofMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+
+                // 7. Total Operating Weight
+                const totalOpWt = dowWt + tofKg;
+                const totalOpMom = dowMom + tofMom;
+                const totalOpArm = totalOpWt > 0 ? totalOpMom / totalOpWt : 0;
+
+                document.getElementById('totalOpWt').value = totalOpWt > 0 ? totalOpWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
+                document.getElementById('totalOpMom').value = totalOpWt > 0 ? totalOpMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('totalOpArm').value = totalOpWt > 0 ? totalOpArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+            }
+
+            document.getElementById('toolsWt').addEventListener('input', calculateSummaryData);
+            document.getElementById('tofArm').addEventListener('input', calculateSummaryData);
+
+        });
+    </script>
+</body>
+</html>
