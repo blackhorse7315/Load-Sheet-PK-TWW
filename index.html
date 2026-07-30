@@ -228,7 +228,7 @@
 
         <!-- SECTION: FUEL SYSTEM -->
         <div class="mb-8">
-            <h2 class="text-lg font-bold text-white mb-3">Fuel System (lbs)</h2>
+            <h2 class="text-lg font-bold text-white mb-3">Fuel System (kg)</h2>
             <div class="border-b border-[#334155] mb-4"></div>
 
             <div class="data-row">
@@ -242,7 +242,7 @@
             <div class="data-row">
                 <div class="data-label">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                    Start Engine Fuel
+                    Start Engine Fuel (lbs)
                 </div>
                 <select id="startFuel" class="app-input font-mono">
                     <option value="100">100</option>
@@ -252,7 +252,7 @@
             <div class="data-row">
                 <div class="data-label">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
-                    Fuel on Board
+                    Fuel on Board (lbs)
                 </div>
                 <input type="number" id="fob" class="app-input font-mono" placeholder="0" min="0">
             </div>
@@ -287,7 +287,7 @@
             <div class="data-row">
                 <div class="data-label">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
-                    Empty Weight (lbs)
+                    Empty Weight (kg)
                 </div>
                 <input type="number" id="emptyWeight" class="app-input font-mono" placeholder="0" min="0" step="0.1" value="4853.80">
             </div>
@@ -297,7 +297,7 @@
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     Arm
                 </div>
-                <input type="number" id="emptyArm" class="app-input font-mono" placeholder="0.00" step="0.01">
+                <input type="text" id="emptyArm" class="app-input font-mono" placeholder="0.00" value="6,070">
             </div>
 
             <div class="data-row">
@@ -305,7 +305,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Total Moment
                 </div>
-                <input type="text" id="emptyMoment" class="app-input app-input-readonly font-mono !text-amber-400 font-bold" readonly placeholder="0">
+                <input type="text" id="emptyMoment" class="app-input font-mono !text-amber-400 font-bold" placeholder="0" value="29,526.64">
             </div>
         </div>
 
@@ -422,7 +422,7 @@
                             </div>
                         </td>
                         <td class="text-center text-gray-500 font-sans text-xs">-</td>
-                        <td class="text-center"><input type="number" id="toolsWt" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" id="toolsWt" class="app-input table-input" placeholder="0" min="0" value="50"></td>
                         <td class="text-right text-gray-400">9,970</td>
                         <td class="text-right"><input type="text" id="toolsMom" class="app-input table-input app-input-readonly" readonly placeholder="0"></td>
                     </tr>
@@ -556,7 +556,7 @@
                         <td class="text-right"><input type="text" id="opMom" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr>
-                        <td class="font-semibold text-gray-400 text-xs">Empty Wt (Conv. Kg)</td>
+                        <td class="font-semibold text-gray-400 text-xs">Empty Wt</td>
                         <td class="text-right"><input type="text" id="ewKgWt" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
                         <td class="text-right"><input type="text" id="ewKgArm" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
                         <td class="text-right"><input type="text" id="ewKgMom" class="app-input table-input app-input-readonly !text-gray-400 !w-full" readonly placeholder="0"></td>
@@ -568,9 +568,9 @@
                         <td class="text-right"><input type="text" id="dowMom" class="app-input table-input app-input-readonly !text-amber-400 font-bold !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr>
-                        <td class="font-semibold text-gray-300">Takeoff Fuel <span class="text-[10px] text-gray-500 block">(FOB Conv. Kg)</span></td>
+                        <td class="font-semibold text-gray-300">Takeoff Fuel</td>
                         <td class="text-right"><input type="text" id="tofKgWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
-                        <td class="text-right"><input type="number" id="tofArm" class="app-input table-input !w-full" placeholder="0" value="6260"></td>
+                        <td class="text-right"><input type="text" id="tofArm" class="app-input table-input !w-full" placeholder="0" value="6,260"></td>
                         <td class="text-right"><input type="text" id="tofMom" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
                     </tr>
                     <tr class="!bg-emerald-900/20">
@@ -624,22 +624,27 @@
             // 2. Fuel Calculation
             function calculateFuel() {
                 const flightTimeVal = flightTimeInput.value;
-                const fobVal = parseFloat(fobInput.value) || 0;
-                const startFuelVal = parseFloat(startFuelSelect.value) || 100;
+                const fobLbs = parseFloat(fobInput.value) || 0;
+                const startFuelLbs = parseFloat(startFuelSelect.value) || 100; // Default 100 lbs
+                const LBS_TO_KG = 0.45359237;
+
+                const fobKg = fobLbs * LBS_TO_KG;
+                const startFuelKg = startFuelLbs * LBS_TO_KG;
                 
-                let tripFuelLbs = 0;
+                let tripFuelKg = 0;
 
                 if (flightTimeVal) {
                     const [hours, minutes] = flightTimeVal.split(':');
                     const totalMinutes = (parseInt(hours, 10) * 60) + parseInt(minutes, 10);
-                    tripFuelLbs = totalMinutes * 10;
-                    tripFuelOutput.value = tripFuelLbs.toFixed(0);
+                    // Konsumsi fuel: ~272 kg/jam -> 4.536 kg/menit
+                    tripFuelKg = totalMinutes * 4.536;
+                    tripFuelOutput.value = tripFuelKg.toFixed(0);
                 } else {
                     tripFuelOutput.value = '';
                 }
 
                 if (fobInput.value !== '') {
-                    const landingFuel = fobVal - tripFuelLbs - startFuelVal;
+                    const landingFuel = fobKg - tripFuelKg - startFuelKg;
                     landingFuelOutput.value = landingFuel.toFixed(0);
                     
                     if (landingFuel < 0) {
@@ -661,22 +666,38 @@
             fobInput.addEventListener('input', calculateFuel);
             startFuelSelect.addEventListener('change', calculateFuel);
 
-            // 3. Empty Moment
-            function calculateEmptyMoment() {
+            // 3. Empty Weight, Arm & Moment Interactivity (Two-Way Binding)
+            function calculateEmptyMomentFromArm() {
                 const weight = parseFloat(emptyWeightInput.value) || 0;
-                const arm = parseFloat(emptyArmInput.value) || 0;
+                const armRaw = emptyArmInput.value.replace(/,/g, '');
+                const arm = parseFloat(armRaw) || 0;
                 
-                if (emptyWeightInput.value !== '' && emptyArmInput.value !== '') {
+                if (weight > 0 && emptyArmInput.value !== '') {
                     const moment = weight * arm;
                     emptyMomentOutput.value = moment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                } else {
+                } else if (emptyArmInput.value === '') {
                     emptyMomentOutput.value = '';
                 }
                 calculateSummaryData();
             }
 
-            emptyWeightInput.addEventListener('input', calculateEmptyMoment);
-            emptyArmInput.addEventListener('input', calculateEmptyMoment);
+            function calculateEmptyArmFromMoment() {
+                const weight = parseFloat(emptyWeightInput.value) || 0;
+                const momRaw = emptyMomentOutput.value.replace(/,/g, '');
+                const mom = parseFloat(momRaw) || 0;
+                
+                if (weight > 0 && emptyMomentOutput.value !== '') {
+                    const arm = mom / weight;
+                    emptyArmInput.value = arm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                } else if (emptyMomentOutput.value === '') {
+                    emptyArmInput.value = '';
+                }
+                calculateSummaryData();
+            }
+
+            emptyWeightInput.addEventListener('input', calculateEmptyMomentFromArm); // Default behavior
+            emptyArmInput.addEventListener('input', calculateEmptyMomentFromArm);
+            emptyMomentOutput.addEventListener('input', calculateEmptyArmFromMoment);
 
             // 4. POB & Passenger Moment
             function calculatePaxAndPOB() {
@@ -758,11 +779,11 @@
                 document.getElementById('opMom').value = opWt > 0 ? opMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('opArm').value = opWt > 0 ? opArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
 
-                // 4. Empty Wt (Kg)
-                const ewLbs = parseFloat(document.getElementById('emptyWeight').value) || 0;
-                const ewArm = parseFloat(document.getElementById('emptyArm').value) || 0;
-                const ewKg = ewLbs * LBS_TO_KG;
-                const ewMom = ewKg * ewArm;
+                // 4. Empty Wt (Kg) - Use Manual Moment directly (tanpa konversi LBS)
+                const ewKg = parseFloat(document.getElementById('emptyWeight').value) || 0;
+                const ewMomRaw = document.getElementById('emptyMoment').value.replace(/,/g, '');
+                const ewMom = parseFloat(ewMomRaw) || 0;
+                const ewArm = ewKg > 0 ? (ewMom / ewKg) : 0;
 
                 document.getElementById('ewKgWt').value = ewKg > 0 ? ewKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
                 document.getElementById('ewKgArm').value = ewKg > 0 ? ewArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
@@ -778,9 +799,19 @@
                 document.getElementById('dowArm').value = dowWt > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
 
                 // 6. Takeoff Fuel
+                // Fuel on board (lbs) - Start Engine (lbs), lalu di convert ke kg
                 const fobLbs = parseFloat(document.getElementById('fob').value) || 0;
-                const tofKg = fobLbs * LBS_TO_KG;
-                const tofArm = parseFloat(document.getElementById('tofArm').value) || 0;
+                const startFuelLbs = parseFloat(document.getElementById('startFuel').value) || 100;
+                
+                // Takeoff Fuel dalam LBS
+                const tofLbs = fobLbs > 0 ? Math.max(0, fobLbs - startFuelLbs) : 0;
+                
+                // Convert ke KG
+                const tofKg = tofLbs * LBS_TO_KG;
+                
+                // Menghapus koma sebelum melakukan kalkulasi matematika
+                const rawTofArm = document.getElementById('tofArm').value.replace(/,/g, '');
+                const tofArm = parseFloat(rawTofArm) || 0;
                 const tofMom = tofKg * tofArm;
 
                 document.getElementById('tofKgWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
@@ -798,9 +829,47 @@
 
             document.getElementById('toolsWt').addEventListener('input', calculateSummaryData);
             document.getElementById('tofArm').addEventListener('input', calculateSummaryData);
+            
+            // Auto-format TofArm dengan koma saat kursor berpindah (blur)
+            document.getElementById('tofArm').addEventListener('blur', function() {
+                let val = parseFloat(this.value.replace(/,/g, '')) || 0;
+                if (val > 0) {
+                    this.value = val.toLocaleString('en-US', {maximumFractionDigits: 2});
+                }
+            });
+
+            document.getElementById('emptyArm').addEventListener('blur', function() {
+                let val = parseFloat(this.value.replace(/,/g, '')) || 0;
+                if (val > 0) {
+                    this.value = val.toLocaleString('en-US', {maximumFractionDigits: 2});
+                }
+            });
+
+            document.getElementById('emptyMoment').addEventListener('blur', function() {
+                let val = parseFloat(this.value.replace(/,/g, '')) || 0;
+                if (val > 0) {
+                    this.value = val.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                }
+            });
+
+            // Auto-fill Weight 90kg untuk pemilihan Crew
+            const crewSelects = document.querySelectorAll('.crew-row select');
+            crewSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const weightInput = this.closest('.crew-row').querySelector('.crew-weight');
+                    if (this.value !== "") {
+                        weightInput.value = 90; // Otomatis isi 90kg jika nama terpilih
+                    } else {
+                        weightInput.value = ""; // Kosongkan jika dibatalkan
+                    }
+                    // Jalankan ulang fungsi hitung agar Data masuk ke POB & Summary
+                    calculatePaxAndPOB();
+                    calculateSummaryData();
+                });
+            });
 
             // Initialize default calculations on first load
-            calculateEmptyMoment();
+            calculatePaxAndPOB(); 
             calculateSummaryData();
         });
     </script>
