@@ -667,6 +667,24 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- SECTION: CG ENVELOPE CHART -->
+        <div class="mb-12">
+            <h2 class="text-lg font-bold text-white mb-3">Center of Gravity Envelope</h2>
+            <div class="border-b border-[#334155] mb-4"></div>
+            
+            <div class="bg-[#1e293b] p-4 rounded-lg border border-[#334155] flex flex-col items-center">
+                <div class="relative w-full max-w-[600px] aspect-square bg-[#ffffe0] border-2 border-black overflow-hidden" id="chartContainer">
+                    <canvas id="cgChart" class="w-full h-full block"></canvas>
+                </div>
+                
+                <div class="mt-4 flex gap-6 text-sm font-semibold">
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-cyan-500 border border-black"></div> ZFW</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 bg-amber-500 border border-black"></div> TOW</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 bg-emerald-500 border border-black rounded-sm" style="transform: rotate(45deg);"></div> LDW</div>
+                </div>
+            </div>
+        </div>
     </form>
 
     <script>
@@ -758,8 +776,9 @@
                 const arm = parseFloat(armRaw) || 0;
                 
                 if (weight > 0 && emptyArmInput.value !== '') {
-                    const moment = weight * arm;
-                    emptyMomentOutput.value = moment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    // Moment di input disajikan sebagai Index (dibagi 1000) agar sesuai format 29526.64
+                    const momentIndex = (weight * arm) / 1000;
+                    emptyMomentOutput.value = momentIndex.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 } else if (emptyArmInput.value === '') {
                     emptyMomentOutput.value = '';
                 }
@@ -769,10 +788,11 @@
             function calculateEmptyArmFromMoment() {
                 const weight = parseFloat(emptyWeightInput.value) || 0;
                 const momRaw = emptyMomentOutput.value.replace(/,/g, '');
-                const mom = parseFloat(momRaw) || 0;
+                const momIndex = parseFloat(momRaw) || 0;
                 
                 if (weight > 0 && emptyMomentOutput.value !== '') {
-                    const arm = mom / weight;
+                    // Konversi Index kembali ke perhitungan Arm normal (mm)
+                    const arm = (momIndex * 1000) / weight;
                     emptyArmInput.value = arm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
                 } else if (emptyMomentOutput.value === '') {
                     emptyArmInput.value = '';
@@ -834,13 +854,15 @@
 
                 // --- 1. Empty Weight ---
                 const ewKg = parseFloat(document.getElementById('emptyWeight').value) || 0;
-                const ewMomRaw = document.getElementById('emptyMoment').value.replace(/,/g, '');
-                const ewMom = parseFloat(ewMomRaw) || 0;
-                const ewArm = ewKg > 0 ? (ewMom / ewKg) : 0;
+                const ewArmRaw = document.getElementById('emptyArm').value.replace(/,/g, '');
+                const ewArm = parseFloat(ewArmRaw) || 0;
+                
+                // Hitung True Moment (Weight * Arm) untuk kalkulasi akurat pada DOW
+                const trueEwMom = ewKg * ewArm;
 
                 document.getElementById('sumEwWt').value = ewKg > 0 ? ewKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
                 document.getElementById('sumEwArm').value = ewKg > 0 ? ewArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
-                document.getElementById('sumEwMom').value = ewKg > 0 ? ewMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('sumEwMom').value = ewKg > 0 ? trueEwMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
                 // --- 2. Operating Item (Crew + Tools) ---
                 let totalCrewWt = 0, totalCrewMom = 0;
@@ -870,8 +892,10 @@
 
                 // --- 3. Dry Operating Weight (DOW) ---
                 const dowWt = ewKg + opItemWt;
-                const dowMom = ewMom + opItemMom;
-                const dowArm = dowWt > 0 ? dowMom / dowWt : 0;
+                // SESUAI RUMUS: penjumlahan moment empty weight + moment operating item
+                const dowMom = trueEwMom + opItemMom;
+                // SESUAI RUMUS: lalu hasilnya dibagi weight Dry of Weight
+                const dowArm = dowWt > 0 ? (dowMom / dowWt) : 0;
 
                 document.getElementById('dowWt').value = dowWt > 0 ? dowWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
                 document.getElementById('dowArm').value = dowWt > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
@@ -980,6 +1004,9 @@
                 updateStatusBadge('zfwStatus', zfwWt, maxZfw);
                 updateStatusBadge('towStatus', towWt, maxTow);
                 updateStatusBadge('ldwStatus', ldwWt, maxLdw);
+                
+                // Update Chart
+                drawChart(zfwMac, zfwWt, towMac, towWt, ldwMac, ldwWt);
             }
 
             function updateStatusBadge(elemId, actual, max) {
@@ -1039,6 +1066,228 @@
             calculatePaxAndPOB(); 
             calculateSummaryData();
         });
+
+        // --- CHART DRAWING LOGIC ---
+        function drawChart(zfwMac, zfwWt, towMac, towWt, ldwMac, ldwWt) {
+            const canvas = document.getElementById('cgChart');
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('chartContainer');
+            
+            // Atur resolusi internal canvas agar tajam
+            canvas.width = container.clientWidth * window.devicePixelRatio;
+            canvas.height = container.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            
+            ctx.clearRect(0, 0, w, h);
+
+            // Pengaturan Batas Skala
+            const minMac = 12; // Sumbu X kiri
+            const maxMac = 32; // Sumbu X kanan
+            const minWt = 4000; // Sumbu Y bawah
+            const maxWt = 8000; // Sumbu Y atas
+            
+            // Area Gambar (Padding untuk Label)
+            const padLeft = 60;
+            const padBottom = 40;
+            const padRight = 20;
+            const padTop = 20;
+            
+            const plotW = w - padLeft - padRight;
+            const plotH = h - padTop - padBottom;
+
+            // Fungsi Helper untuk memetakan koordinat asli ke pixel canvas
+            const mapX = (mac) => padLeft + ((mac - minMac) / (maxMac - minMac)) * plotW;
+            const mapY = (wt) => padTop + plotH - ((wt - minWt) / (maxWt - minWt)) * plotH;
+
+            // 1. Gambar Grid Background
+            ctx.strokeStyle = '#87ceeb'; // Warna biru grid
+            ctx.lineWidth = 1;
+            
+            // Grid Vertikal (MAC)
+            for (let i = minMac; i <= maxMac; i += 0.5) {
+                const x = mapX(i);
+                ctx.beginPath();
+                ctx.moveTo(x, padTop);
+                ctx.lineTo(x, padTop + plotH);
+                ctx.stroke();
+            }
+            
+            // Grid Horizontal (Weight)
+            for (let i = minWt; i <= maxWt; i += 200) {
+                const y = mapY(i);
+                ctx.beginPath();
+                ctx.moveTo(padLeft, y);
+                ctx.lineTo(padLeft + plotW, y);
+                ctx.stroke();
+            }
+
+            // 2. Gambar Sumbu & Label
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = '#000';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // Sumbu Y & Label (Weight)
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop);
+            ctx.lineTo(padLeft, padTop + plotH);
+            ctx.stroke();
+            
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let i = minWt; i <= maxWt; i += 500) {
+                const y = mapY(i);
+                ctx.fillText(i, padLeft - 8, y);
+                // Tick mark
+                ctx.beginPath();
+                ctx.moveTo(padLeft - 5, y);
+                ctx.lineTo(padLeft, y);
+                ctx.stroke();
+            }
+            
+            // Sumbu X & Label (MAC)
+            ctx.beginPath();
+            ctx.moveTo(padLeft, padTop + plotH);
+            ctx.lineTo(padLeft + plotW, padTop + plotH);
+            ctx.stroke();
+            
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            for (let i = minMac; i <= maxMac; i += 1) {
+                const x = mapX(i);
+                ctx.fillText(i, x, padTop + plotH + 8);
+                // Tick mark
+                ctx.beginPath();
+                ctx.moveTo(x, padTop + plotH);
+                ctx.lineTo(x, padTop + plotH + 5);
+                ctx.stroke();
+            }
+            
+            // Label Poros
+            ctx.save();
+            ctx.translate(15, padTop + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('WEIGHT - KG', 0, 0);
+            ctx.restore();
+            
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('CG POSITION - PERCENT MAC', padLeft + plotW / 2, h - 15);
+
+            // 3. Gambar Batas Envelope (Garis Merah)
+            // Koordinat Envelope berdasarkan data gambar
+            const envData = [
+                { mac: 15.0, wt: 4300 },
+                { mac: 15.0, wt: 5013 },
+                { mac: 16.0, wt: 7700 },
+                { mac: 30.0, wt: 7700 },
+                { mac: 30.0, wt: 4300 },
+                { mac: 15.0, wt: 4300 }
+            ];
+
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(mapX(envData[0].mac), mapY(envData[0].wt));
+            for (let i = 1; i < envData.length; i++) {
+                ctx.lineTo(mapX(envData[i].mac), mapY(envData[i].wt));
+            }
+            ctx.stroke();
+            
+            // Gambar Garis Horizontal Limit (MZFW & MLDW)
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 3;
+            // MZFW (7100)
+            ctx.beginPath();
+            ctx.moveTo(mapX(15.8), mapY(7100)); // Perkiraan potong kiri dari gambar
+            ctx.lineTo(mapX(30.0), mapY(7100));
+            ctx.stroke();
+            // MLDW (7450)
+            ctx.beginPath();
+            ctx.moveTo(mapX(16.0), mapY(7450)); // Perkiraan potong kiri dari gambar
+            ctx.lineTo(mapX(30.0), mapY(7450));
+            ctx.stroke();
+            
+            // Gambar Cross (X) pada titik sudut Envelope
+            ctx.strokeStyle = '#1e3a8a';
+            ctx.lineWidth = 1;
+            const drawCross = (x, y) => {
+                ctx.beginPath(); ctx.moveTo(x-4, y-4); ctx.lineTo(x+4, y+4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x-4, y+4); ctx.lineTo(x+4, y-4); ctx.stroke();
+            };
+            envData.forEach(pt => drawCross(mapX(pt.mac), mapY(pt.wt)));
+            drawCross(mapX(15.8), mapY(7100));
+            drawCross(mapX(30.0), mapY(7100));
+            drawCross(mapX(16.0), mapY(7450));
+            drawCross(mapX(30.0), mapY(7450));
+
+            // 4. Plot Titik Data Aktual (ZFW, TOW, LDW)
+            const plotPoint = (mac, wt, color, shape, label) => {
+                if (mac <= 0 || wt <= 0) return; // Jangan plot jika belum ada data valid
+                
+                const px = mapX(mac);
+                const py = mapY(wt);
+                
+                // Batasi plotting agar tidak keluar area (walau overlimit)
+                if(px < padLeft || px > padLeft+plotW || py < padTop || py > padTop+plotH) return;
+
+                ctx.fillStyle = color;
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1.5;
+                
+                ctx.beginPath();
+                if (shape === 'circle') {
+                    ctx.arc(px, py, 6, 0, 2 * Math.PI);
+                } else if (shape === 'square') {
+                    ctx.rect(px - 5, py - 5, 10, 10);
+                } else if (shape === 'diamond') {
+                    ctx.moveTo(px, py - 6);
+                    ctx.lineTo(px + 6, py);
+                    ctx.lineTo(px, py + 6);
+                    ctx.lineTo(px - 6, py);
+                    ctx.closePath();
+                }
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw Label Background
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillRect(px + 8, py - 10, 36, 20);
+                ctx.strokeStyle = '#ccc';
+                ctx.strokeRect(px + 8, py - 10, 36, 20);
+                
+                // Draw Label Text
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, px + 26, py);
+            };
+
+            // Plot titik jika datanya valid (lebih dari 0)
+            if (zfwWt > 0 && zfwMac > 0) plotPoint(zfwMac, zfwWt, '#06b6d4', 'circle', 'ZFW');   // Cyan Circle
+            if (towWt > 0 && towMac > 0) plotPoint(towMac, towWt, '#f59e0b', 'square', 'TOW');   // Amber Square
+            if (ldwWt > 0 && ldwMac > 0) plotPoint(ldwMac, ldwWt, '#10b981', 'diamond', 'LDW'); // Emerald Diamond
+            
+            // Gambar Garis Penghubung (TOW -> LDW -> ZFW)
+            if (zfwWt > 0 && towWt > 0 && ldwWt > 0) {
+                ctx.strokeStyle = '#94a3b8'; // Garis abu-abu
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 5]); // Garis putus-putus
+                ctx.beginPath();
+                ctx.moveTo(mapX(towMac), mapY(towWt));
+                ctx.lineTo(mapX(ldwMac), mapY(ldwWt));
+                ctx.lineTo(mapX(zfwMac), mapY(zfwWt));
+                ctx.stroke();
+                ctx.setLineDash([]); // Kembalikan ke garis solid
+            }
+        }
     </script>
 </body>
 </html>
