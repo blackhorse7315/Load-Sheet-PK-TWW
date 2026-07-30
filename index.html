@@ -844,11 +844,13 @@
             <!-- Header Dokumen -->
             <div class="text-center mb-6" style="border-bottom: 2px solid black; padding-bottom: 10px;">
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <img src="https://lh3.googleusercontent.com/d/1WNcGjsZ9_Fp54xzOl01EYRqM6-wY5Zh7" alt="Logo" style="height: 60px; object-fit: contain; margin: 0 auto;" crossorigin="anonymous" />
+                    <img id="pdf-out-logo" src="" alt="Logo" style="height: 60px; object-fit: contain; margin: 0 auto;" />
                 </div>
                 <h1 class="text-2xl font-bold mb-1" style="font-family: 'Arial', sans-serif;">LOAD SHEET CASA 212-200</h1>
+                <p style="font-size: 10px; font-weight: bold; margin-bottom: 5px;">Form No. F/TWA-OPS/004-03</p>
                 <h2 class="text-lg font-bold">No. Registrasi <span id="pdf-out-noreg">_____</span> / SN. N102</h2>
                 <h3 class="text-sm font-semibold uppercase">PT. Transwisata Prima Aviation</h3>
+                <p style="font-size: 10px; font-weight: bold; margin-top: 5px;">Form No. F/TWA-OPS/004-03</p>
             </div>
 
             <!-- Tabel 1: Flight & Fuel Data -->
@@ -965,15 +967,15 @@
                 <div style="width: 30%;">
                     <p>Prepared By,</p>
                     <div style="height: 70px; display: flex; justify-content: center; align-items: center; margin: 5px 0;">
-                        <img id="pdf-out-sic-sign" src="" crossorigin="anonymous" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" />
+                        <img id="pdf-out-sic-sign" src="" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" />
                     </div>
                     <p style="border-top: 1px solid black; padding-top: 5px; margin-bottom: 2px;" id="pdf-out-sic-name">______________________</p>
                     <p style="font-size: 9px; font-weight: normal;">Flight Operations Officer (SIC)</p>
                 </div>
                 <div style="width: 30%;">
-                    <p>Acknowledged By,</p>
+                    <p>Approved By,</p>
                     <div style="height: 70px; display: flex; justify-content: center; align-items: center; margin: 5px 0;">
-                        <img id="pdf-out-pic-sign" src="" crossorigin="anonymous" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" />
+                        <img id="pdf-out-pic-sign" src="" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" />
                     </div>
                     <p style="border-top: 1px solid black; padding-top: 5px; margin-bottom: 2px;" id="pdf-out-pic-name">______________________</p>
                     <p style="font-size: 9px; font-weight: normal;">Pilot in Command (PIC)</p>
@@ -1342,38 +1344,48 @@
                 }
             });
 
-            // --- FUNGSI GENERATE PDF TERBARU (FORMAL REPORT) ---
-            document.getElementById('downloadPdfBtn').addEventListener('click', function() {
-                const btn = document.getElementById('downloadPdfBtn');
-                btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="hidden sm:inline">Generating...</span>';
-                
-                // 1. Mengisi Data Flight & Fuel
-                document.getElementById('pdf-out-date').innerText = document.getElementById('flightDate').value;
-                document.getElementById('pdf-out-noreg').innerText = document.getElementById('noreg').value || '_____';
-                document.getElementById('pdf-out-actype').innerText = document.getElementById('acType').value || '-';
-                document.getElementById('pdf-out-customer').innerText = document.getElementById('customer').value || '-';
-                document.getElementById('pdf-out-from').innerText = document.getElementById('depFrom').value || '-';
-                document.getElementById('pdf-out-dest').innerText = document.getElementById('arrDest').value || '-';
-                
-                document.getElementById('pdf-out-flighttime').innerText = document.getElementById('flightTime').value || '00:00';
-                document.getElementById('pdf-out-fob').innerText = document.getElementById('fob').value ? document.getElementById('fob').value + ' Lbs' : '-';
-                document.getElementById('pdf-out-startfuel').innerText = document.getElementById('startFuel').value ? document.getElementById('startFuel').options[document.getElementById('startFuel').selectedIndex].text + ' Lbs' : '-';
-                document.getElementById('pdf-out-tripfuel').innerText = document.getElementById('tripFuel').value || '-';
-                document.getElementById('pdf-out-landingfuel').innerText = document.getElementById('landingFuel').value || '-';
+            // --- FUNGSI HELPER UNTUK MENGAMBIL GAMBAR SEBAGAI BASE64 SECARA AMAN ---
+            async function fetchImageAsBase64(url) {
+                try {
+                    const response = await fetch(url);
+                    const blob = await response.blob();
+                    return await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (e) {
+                    console.warn("Gambar terhalang CORS/Network, PDF tetap dilanjutkan:", url);
+                    return null;
+                }
+            }
 
-                // 2. Mengisi Data Empty Weight & Crew
-                let crewHtml = `
-                    <tr>
-                        <td style="border: 1px solid black; padding: 4px; font-weight:bold;">Empty Weight</td>
-                        <td style="border: 1px solid black; padding: 4px; text-align:left;">Basic Aircraft</td>
-                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyWeight').value}</td>
-                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyArm').value}</td>
-                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyMoment').value}</td>
-                    </tr>
-                `;
-                
-                let picName = "";
-                let sicName = "";
+            // --- FUNGSI GENERATE PDF TERBARU (FORMAL REPORT) ---
+            document.getElementById('downloadPdfBtn').addEventListener('click', async function() {
+                const btn = document.getElementById('downloadPdfBtn');
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="hidden sm:inline">Generating...</span>';
+                btn.disabled = true;
+
+                try {
+                    // 1. Mengisi Data Flight & Fuel
+                    document.getElementById('pdf-out-date').innerText = document.getElementById('flightDate').value;
+                    document.getElementById('pdf-out-noreg').innerText = document.getElementById('noreg').value || '_____';
+                    document.getElementById('pdf-out-actype').innerText = document.getElementById('acType').value || '-';
+                    document.getElementById('pdf-out-customer').innerText = document.getElementById('customer').value || '-';
+                    document.getElementById('pdf-out-from').innerText = document.getElementById('depFrom').value || '-';
+                    document.getElementById('pdf-out-dest').innerText = document.getElementById('arrDest').value || '-';
+                    document.getElementById('pdf-out-flighttime').innerText = document.getElementById('flightTime').value || '-';
+                    document.getElementById('pdf-out-fob').innerText = document.getElementById('fob').value || '0';
+                    document.getElementById('pdf-out-startfuel').innerText = document.getElementById('startFuel').value || '0';
+                    document.getElementById('pdf-out-tripfuel').innerText = document.getElementById('tripFuel').value || '0';
+                    document.getElementById('pdf-out-landingfuel').innerText = document.getElementById('landingFuel').value || '0';
+
+                    // 2. Mengisi Data Crew & Signatures
+                    let crewHtml = '';
+                    let picName = "";
+                    let sicName = "";
 
                 document.querySelectorAll('.crew-row').forEach(row => {
                     const pos = row.querySelector('td.font-bold').innerText.trim();
@@ -1448,7 +1460,7 @@
                     pdfChartImg.src = dataUrl;
                 }
 
-                // --- 7. MENGISI TANDA TANGAN (AUTO SIGNATURE) ---
+                // --- 7. MENGISI TANDA TANGAN & LOGO (AUTO SIGNATURE DENGAN FETCH BASE64) ---
                 const signatures = {
                     "Capt. Sofian M. L. Tobing": "https://lh3.googleusercontent.com/d/1-JHc4VmCtUrl8ioneNeQ1tt32eaFJwC8",
                     "Capt. Muhamad Sofwan": "https://lh3.googleusercontent.com/d/1O64KaZXdmfxrSvihzanneUP4w0uVrR5A",
@@ -1457,6 +1469,13 @@
                     "FO. Henaldy Arifia S.": "https://lh3.googleusercontent.com/d/1c6-4MnWpA7YwUZzK_-93a6bTkTzTe9W2"
                 };
 
+                // Memuat Logo secara aman (jika belum dimuat)
+                const logoImg = document.getElementById('pdf-out-logo');
+                if (!logoImg.src || !logoImg.src.startsWith('data:')) {
+                    const logoB64 = await fetchImageAsBase64("https://lh3.googleusercontent.com/d/1WNcGjsZ9_Fp54xzOl01EYRqM6-wY5Zh7");
+                    if (logoB64) logoImg.src = logoB64;
+                }
+
                 // Isi Nama Text
                 document.getElementById('pdf-out-pic-name').innerText = picName || '______________________';
                 document.getElementById('pdf-out-sic-name').innerText = sicName || '______________________';
@@ -1464,8 +1483,13 @@
                 // Isi Gambar Tanda Tangan PIC
                 const picSignImg = document.getElementById('pdf-out-pic-sign');
                 if (picName && signatures[picName]) {
-                    picSignImg.src = signatures[picName];
-                    picSignImg.style.display = 'block';
+                    const b64 = await fetchImageAsBase64(signatures[picName]);
+                    if(b64) {
+                        picSignImg.src = b64;
+                        picSignImg.style.display = 'block';
+                    } else {
+                        picSignImg.style.display = 'none';
+                    }
                 } else {
                     picSignImg.style.display = 'none';
                     picSignImg.src = '';
@@ -1474,8 +1498,13 @@
                 // Isi Gambar Tanda Tangan SIC
                 const sicSignImg = document.getElementById('pdf-out-sic-sign');
                 if (sicName && signatures[sicName]) {
-                    sicSignImg.src = signatures[sicName];
-                    sicSignImg.style.display = 'block';
+                    const b64 = await fetchImageAsBase64(signatures[sicName]);
+                    if(b64) {
+                        sicSignImg.src = b64;
+                        sicSignImg.style.display = 'block';
+                    } else {
+                        sicSignImg.style.display = 'none';
+                    }
                 } else {
                     sicSignImg.style.display = 'none';
                     sicSignImg.src = '';
@@ -1491,21 +1520,29 @@
                     margin:       [5, 5, 5, 5],
                     filename:     filename,
                     image:        { type: 'jpeg', quality: 1 },
-                    // HAPUS allowTaint: true untuk menghindari error DOMException (SecurityError / Canvas Tainted)
                     html2canvas:  { scale: 2, useCORS: true }, 
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                // Menambahkan .catch() untuk menangani jika terjadi unhandled rejection
-                html2pdf().set(opt).from(element).save().then(() => {
-                    // Kembalikan teks tombol
-                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span class="hidden sm:inline">Download PDF</span>';
-                }).catch(err => {
+                await html2pdf().set(opt).from(element).save();
+
+                } catch (err) {
                     console.error("PDF Generation Error:", err);
-                    // Kembalikan teks tombol jika gagal agar tidak stuck loading
-                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span class="hidden sm:inline">Download PDF</span>';
-                    alert("Terjadi kendala saat memuat gambar (Logo/Tanda Tangan) dari server. Harap pastikan koneksi stabil.");
-                });
+                    
+                    // Fallback jika terjadi force-error
+                    try {
+                         const element = document.getElementById('pdf-report');
+                         const opt = { margin: [5, 5, 5, 5], filename: 'Loadsheet.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } };
+                         await html2pdf().set(opt).from(element).save();
+                    } catch (e) {
+                         console.error("Fatal Error:", e);
+                         alert("Gagal mencetak PDF. Harap muat ulang halaman.");
+                    }
+                } finally {
+                    // Kembalikan teks tombol
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
             });
 
             // Auto-fill Weight 90kg untuk pemilihan Crew
