@@ -131,59 +131,140 @@
             .header-icon { display: none; } /* Hide icons on small mobile to save space */
         }
         
-        /* CSS Khusus Print & Download PDF */
+        /* CSS Khusus Print & Download PDF - FORMAT DOKUMEN RESMI */
         @media print, .pdf-export {
-            body, #wbForm { background: white !important; color: black !important; }
-            
-            /* Backgrounds to White */
-            .bg-\[\#1e293b\], .bg-slate-800, .bg-amber-900\/20, .bg-cyan-900\/20, .bg-emerald-900\/20, .bg-purple-900\/20, .bg-gradient-to-b { 
+            body, #wbForm { 
                 background: white !important; 
-                border-color: #000 !important; 
+                color: black !important; 
+                font-family: 'Arial', sans-serif !important;
             }
             
-            /* Typography to Black */
-            .text-white, .text-gray-400, .text-gray-300, .text-gray-500, .text-gray-200, 
-            .text-cyan-400, .text-emerald-400, .text-amber-400, .text-purple-400, .text-blue-400, .text-red-500, .text-red-400 { 
-                color: black !important; 
+            /* Hapus semua format UI Gelap / Bayangan / Sudut Membulat / Efek Glow */
+            .pdf-export * {
+                box-shadow: none !important;
                 text-shadow: none !important;
+                border-radius: 0 !important;
+                transition: none !important;
             }
 
-            /* Inputs looking like plain text */
-            .app-input { 
+            /* Hapus background warna pada container */
+            .pdf-export .bg-\[\#1e293b\], .pdf-export .bg-slate-800, 
+            .pdf-export .bg-amber-900\/20, .pdf-export .bg-cyan-900\/20, 
+            .pdf-export .bg-emerald-900\/20, .pdf-export .bg-purple-900\/20, 
+            .pdf-export .bg-gradient-to-b, .pdf-export .bg-[#0f172a] { 
+                background: transparent !important; 
+            }
+
+            /* Ubah warna font terang (Cyan, Amber, dsb) menjadi hitam tebal */
+            .pdf-export .text-white, .pdf-export .text-gray-400, .pdf-export .text-gray-300, 
+            .pdf-export .text-gray-500, .pdf-export .text-gray-200, .pdf-export .text-cyan-400, 
+            .pdf-export .text-emerald-400, .pdf-export .text-amber-400, .pdf-export .text-purple-400, 
+            .pdf-export .text-blue-400, .pdf-export .text-red-500, .pdf-export .text-red-400 { 
+                color: black !important; 
+                font-weight: bold !important;
+            }
+
+            /* Header Loadsheet Box (Bentuk Kotak Surat Resmi) */
+            .pdf-export .mb-8.text-center {
+                border: 2px solid black !important;
+                padding: 15px !important;
+                margin-bottom: 20px !important;
+            }
+            .pdf-export h1 { font-size: 18pt !important; margin-bottom: 5px !important; font-weight: 900 !important; }
+            .pdf-export h2.text-lg.sm\:text-xl { font-size: 12pt !important; }
+            .pdf-export h3 { font-size: 10pt !important; }
+
+            /* Section Titles (Bergaris Bawah) */
+            .pdf-export h2.text-lg.font-bold {
+                font-size: 11pt !important;
+                border-bottom: 2px solid black !important;
+                padding-bottom: 2px !important;
+                margin-bottom: 5px !important;
+                display: inline-block;
+                width: 100%;
+                text-transform: uppercase;
+            }
+            .pdf-export .border-b.border-\[\#334155\] { display: none !important; } /* Sembunyikan garis bawaan Web */
+
+            /* Data Rows - Ubah dari Card menjadi List Teks Klasik */
+            .pdf-export .data-row { 
+                background: transparent !important; 
+                border: none !important; 
+                border-bottom: 1px dotted #888 !important; 
+                padding: 4px 0 !important; 
+                margin-bottom: 2px !important; 
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .pdf-export .data-label { font-size: 9pt !important; color: black !important; }
+
+            /* Input Form diubah menjadi format isian bergaris bawah (Fill-in the blanks) */
+            .pdf-export .app-input { 
                 background: transparent !important; 
                 color: black !important; 
                 border: none !important; 
-                box-shadow: none !important;
+                border-bottom: 1px solid black !important; 
                 padding: 0 !important;
+                font-size: 9.5pt !important;
+                height: auto !important;
+                text-align: right !important;
+                max-width: 160px !important;
             }
-            select.app-input { appearance: none; background-image: none !important; }
+            .pdf-export select.app-input { appearance: none; background-image: none !important; }
             
-            /* Tables */
-            .app-table th { color: black !important; border-bottom: 2px solid #000 !important; border-color: #000 !important; }
-            .app-table td { background: white !important; border: 1px solid #000 !important; border-radius: 0 !important; }
-            .app-table { border-collapse: collapse !important; border-spacing: 0 !important; }
+            /* Table Styling Resmi (Mirip Excel/Word Document) */
+            .pdf-export .app-table { 
+                border-collapse: collapse !important; 
+                border-spacing: 0 !important; 
+                width: 100% !important;
+                margin-bottom: 15px !important;
+            }
+            .pdf-export .app-table th { 
+                color: black !important; 
+                background: #e5e5e5 !important;
+                border: 1px solid black !important; 
+                padding: 5px !important; 
+                font-size: 9pt !important;
+                font-weight: bold !important;
+                text-align: center !important;
+            }
+            .pdf-export .app-table td { 
+                background: white !important; 
+                border: 1px solid black !important; 
+                padding: 4px 5px !important; 
+                font-size: 9pt !important;
+            }
+            /* Hilangkan border radius web pada ujung tabel */
+            .pdf-export .app-table td:first-child, .pdf-export .app-table td:last-child {
+                border-left: 1px solid black !important;
+                border-right: 1px solid black !important;
+            }
             
-            /* Rows & Borders */
-            .border-\[\#334155\] { border-color: #000 !important; }
-            .data-row { background: white !important; border: 1px solid #000 !important; box-shadow: none !important; }
+            /* Memusatkan teks di dalam tabel PDF */
+            .pdf-export .app-table .app-input { border: none !important; text-align: center !important; }
+            .pdf-export .app-table .text-right .app-input { text-align: right !important; }
+            .pdf-export .app-table .text-left .app-input { text-align: left !important; }
             
-            /* Hide UI controls */
-            .print-hide, .absolute.top-0, .header-icon, svg { display: none !important; }
+            /* Sembunyikan Icon UI, Tombol Print, & Elemen Dekorasi Web */
+            .pdf-export .print-hide, .pdf-export .absolute.top-0, .pdf-export svg, .pdf-export .header-icon { display: none !important; }
             
-            #chartContainer { background: #fff !important; border-color: #000 !important; }
+            /* Chart Container (Beri Garis Tepi) */
+            .pdf-export #chartContainer { background: #fff !important; border: 2px solid #000 !important; margin: 0 auto; max-width: 500px !important; }
+            
+            /* Pencegahan Halaman Terpotong (Page Break Guard) */
+            .pdf-export .mb-8, .pdf-export .mb-12, .pdf-export table, .pdf-export .data-row { page-break-inside: avoid !important; }
         }
 
-        /* Spesifik untuk Export PDF (Mengatur Ukuran Kertas & Margin) */
+        /* Spesifik untuk Set-up Kertas PDF */
         .pdf-export {
             width: 210mm !important; /* Lebar Kertas A4 */
-            padding: 10mm !important;
+            padding: 10mm 12mm !important; /* Margin luar dokumen (Kiri Kanan Atas Bawah) */
             margin: 0 auto;
         }
-        /* Kompres jarak (margin/padding) agar muat lebih banyak di A4 */
-        .pdf-export .mb-8, .pdf-export .mb-12 { margin-bottom: 4mm !important; }
-        .pdf-export .p-6 { padding: 4mm !important; }
-        .pdf-export .data-row { padding: 2mm 4mm !important; margin-bottom: 2px !important; }
-        .pdf-export .app-table th, .pdf-export .app-table td { padding: 2mm !important; }
+        /* Kompres jarak vertikal agar muat efisien di 2 halaman A4 */
+        .pdf-export .mb-8 { margin-bottom: 6mm !important; }
+        .pdf-export .mb-12 { margin-bottom: 6mm !important; }
     </style>
 </head>
 <body class="antialiased min-h-screen p-2 sm:p-6 lg:max-w-4xl lg:mx-auto">
@@ -1129,13 +1210,14 @@
                 const noregVal = document.getElementById('noreg').value || 'Unknown';
                 const filename = `Loadsheet_${noregVal}_${dateVal}.pdf`;
 
-                // Konfigurasi html2pdf
+                // Konfigurasi html2pdf yang Lebih Presisi untuk Dokumen Resmi
                 const opt = {
-                    margin:       5, // mm
+                    margin:       [5, 0, 5, 0], // Margin dalam PDF generator [Atas, Kanan, Bawah, Kiri]
                     filename:     filename,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa rasio Desktop agar rapi di A4
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    image:        { type: 'jpeg', quality: 1 }, // Kualitas Tinggi
+                    html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa dimensi lebar konstan
+                    pagebreak:    { mode: ['css', 'legacy'] }, // Patuh pada perintah "page-break-inside: avoid"
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Ukuran Kertas A4 Mutlak
                 };
 
                 // Proses Generate dan Download
