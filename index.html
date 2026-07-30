@@ -947,8 +947,8 @@
             <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
                 <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
                 <div style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff;">
-                    <!-- Canvas khusus cetak PDF -->
-                    <canvas id="pdf-cgChart" width="600" height="600" style="width: 500px; height: 500px; display: block;"></canvas>
+                    <!-- Canvas khusus cetak PDF diganti dengan IMG agar terbaca html2pdf -->
+                    <img id="pdf-cgChart-img" style="width: 500px; height: 500px; display: block; object-fit: contain; background-color: #ffffe0;" />
                 </div>
                 <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
                     <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
@@ -1421,13 +1421,12 @@
                     <tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">MLDW</td><td style="border: 1px solid black; padding: 4px;">7450</td><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${val('ldwWt')}</td><td style="border: 1px solid black; padding: 4px;">${getStatus('ldwStatus')}</td><td style="border: 1px solid black; padding: 4px;">${val('ldwMacRes')}</td></tr>
                 `;
 
-                // 6. Menyalin Chart ke Template PDF
+                // 6. Menyalin Chart ke Template PDF (Ubah menjadi Image Base64 agar 100% terbaca di PDF)
                 const sourceChart = document.getElementById('cgChart');
-                const pdfChart = document.getElementById('pdf-cgChart');
-                const pCtx = pdfChart.getContext('2d');
-                // Mengatasi resolusi canvas
-                pCtx.clearRect(0, 0, pdfChart.width, pdfChart.height);
-                pCtx.drawImage(sourceChart, 0, 0, pdfChart.width, pdfChart.height);
+                const pdfChartImg = document.getElementById('pdf-cgChart-img');
+                
+                // Konversi canvas yang ada di aplikasi menjadi gambar PNG secara instan
+                pdfChartImg.src = sourceChart.toDataURL('image/png');
 
                 // 7. Mulai proses generate PDF
                 const element = document.getElementById('pdf-report');
