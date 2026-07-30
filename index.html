@@ -582,6 +582,94 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- SECTION: LIMITATION & MAC SUMMARY (ZFW / TOW / LDW) -->
+        <div class="mb-12 overflow-x-auto">
+            <h2 class="text-lg font-bold text-white mb-3">Limitation & MAC Summary (ZFW / TOW / LDW)</h2>
+            <div class="border-b border-[#334155] mb-4"></div>
+
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th class="text-center w-20">Limit</th>
+                        <th class="text-left w-24">Max (kg)</th>
+                        <th class="text-left min-w-[120px]">Item</th>
+                        <th class="text-center w-8"></th>
+                        <th class="text-right w-28">Weight (kg)</th>
+                        <th class="text-right w-24">Arm</th>
+                        <th class="text-center w-20">Status</th>
+                        <th class="text-right w-24">% MAC</th>
+                    </tr>
+                </thead>
+                <tbody class="font-mono text-sm">
+                    <!-- ZFW Block -->
+                    <tr>
+                        <td class="font-bold text-center !bg-slate-800 text-cyan-400">ZFW</td>
+                        <td class="text-left font-bold text-cyan-400 pl-2">7100</td>
+                        <td class="font-semibold text-gray-300">DOW</td>
+                        <td class="text-center font-bold text-emerald-400">+</td>
+                        <td class="text-right"><input type="text" id="limDowWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="limDowArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="font-bold text-center !bg-slate-800 text-cyan-400">ZFW</td>
+                        <td class="text-right"><input type="text" id="zfwMac" class="app-input table-input app-input-readonly !w-full !text-cyan-400 font-bold" readonly placeholder="0.00"></td>
+                    </tr>
+                    <tr class="!bg-cyan-900/20">
+                        <td class="font-bold text-center text-xs text-gray-400">MZFW</td>
+                        <td class="text-left font-bold text-cyan-400 pl-2"><input type="number" id="maxZfw" class="bg-transparent w-16 outline-none" value="7100" readonly></td>
+                        <td class="font-bold text-cyan-400">ZFW</td>
+                        <td class="text-center font-bold text-cyan-400">=</td>
+                        <td class="text-right"><input type="text" id="zfwWt" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="zfwArm" class="app-input table-input app-input-readonly !text-cyan-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-center font-bold text-xs" id="zfwStatus"><span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">-</span></td>
+                        <td class="text-right"><input type="text" id="zfwMacRes" class="app-input table-input app-input-readonly !text-cyan-400 font-bold !w-full" readonly placeholder="0.00"></td>
+                    </tr>
+
+                    <!-- TOW Block -->
+                    <tr>
+                        <td class="font-bold text-center !bg-slate-800 text-amber-400">MTOW</td>
+                        <td class="text-left font-bold text-amber-400 pl-2">7700</td>
+                        <td class="font-semibold text-gray-300">T/O FUEL</td>
+                        <td class="text-center font-bold text-emerald-400">+</td>
+                        <td class="text-right"><input type="text" id="limToFuelWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="limToFuelArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="font-bold text-center !bg-slate-800 text-amber-400">TOW</td>
+                        <td class="text-right"><input type="text" id="towMac" class="app-input table-input app-input-readonly !w-full !text-amber-400 font-bold" readonly placeholder="0.00"></td>
+                    </tr>
+                    <tr class="!bg-amber-900/20">
+                        <td class="font-bold text-center text-xs text-gray-400">MTOW</td>
+                        <td class="text-left font-bold text-amber-400 pl-2"><input type="number" id="maxTow" class="bg-transparent w-16 outline-none" value="7700" readonly></td>
+                        <td class="font-bold text-amber-400">TOW</td>
+                        <td class="text-center font-bold text-amber-400">=</td>
+                        <td class="text-right"><input type="text" id="towWt" class="app-input table-input app-input-readonly !text-amber-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="towArm" class="app-input table-input app-input-readonly !text-amber-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-center font-bold text-xs" id="towStatus"><span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">-</span></td>
+                        <td class="text-right"><input type="text" id="towMacRes" class="app-input table-input app-input-readonly !text-amber-400 font-bold !w-full" readonly placeholder="0.00"></td>
+                    </tr>
+
+                    <!-- LDW Block -->
+                    <tr>
+                        <td class="font-bold text-center !bg-slate-800 text-emerald-400">MLDW</td>
+                        <td class="text-left font-bold text-emerald-400 pl-2">7450</td>
+                        <td class="font-semibold text-gray-300">TRIP FUEL</td>
+                        <td class="text-center font-bold text-red-400">-</td>
+                        <td class="text-right"><input type="text" id="limTripFuelWt" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="limTripFuelArm" class="app-input table-input app-input-readonly !w-full" readonly placeholder="0"></td>
+                        <td class="font-bold text-center !bg-slate-800 text-emerald-400">LDW</td>
+                        <td class="text-right"><input type="text" id="ldwMac" class="app-input table-input app-input-readonly !w-full !text-emerald-400 font-bold" readonly placeholder="0.00"></td>
+                    </tr>
+                    <tr class="!bg-emerald-900/20">
+                        <td class="font-bold text-center text-xs text-gray-400">MLDW</td>
+                        <td class="text-left font-bold text-emerald-400 pl-2"><input type="number" id="maxLdw" class="bg-transparent w-16 outline-none" value="7450" readonly></td>
+                        <td class="font-bold text-emerald-400">LDW</td>
+                        <td class="text-center font-bold text-emerald-400">=</td>
+                        <td class="text-right"><input type="text" id="ldwWt" class="app-input table-input app-input-readonly !text-emerald-400 font-bold !w-full" readonly placeholder="0"></td>
+                        <td class="text-right"><input type="text" id="ldwArm" class="app-input table-input app-input-readonly !text-emerald-400 !w-full" readonly placeholder="0"></td>
+                        <td class="text-center font-bold text-xs" id="ldwStatus"><span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">-</span></td>
+                        <td class="text-right"><input type="text" id="ldwMacRes" class="app-input table-input app-input-readonly !text-emerald-400 font-bold !w-full" readonly placeholder="0.00"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </form>
 
     <script>
@@ -825,6 +913,85 @@
                 document.getElementById('totalOpWt').value = totalOpWt > 0 ? totalOpWt.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
                 document.getElementById('totalOpMom').value = totalOpWt > 0 ? totalOpMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
                 document.getElementById('totalOpArm').value = totalOpWt > 0 ? totalOpArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
+
+                // 8. Limitation & % MAC Calculation
+                // Calculate Traffic Load (Pax + Baggage Weight & Moment)
+                let totalPaxWt = 0, totalPaxMom = 0;
+                paxRows.forEach(row => {
+                    const inputs = row.querySelectorAll('.table-input');
+                    const paxWeight = parseFloat(inputs[0].value) || 0;
+                    const bagWeight = parseFloat(inputs[1].value) || 0;
+                    const arm = parseFloat(row.dataset.arm) || 0;
+                    const rowWt = paxWeight + bagWeight;
+                    if (rowWt > 0) {
+                        totalPaxWt += rowWt;
+                        totalPaxMom += (rowWt * arm);
+                    }
+                });
+
+                // ZFW = DOW + Payload (Pax & Baggage)
+                const zfwWt = dowWt + totalPaxWt;
+                const zfwMom = dowMom + totalPaxMom;
+                const zfwArm = zfwWt > 0 ? zfwMom / zfwWt : 0;
+                const zfwMac = zfwArm > 0 ? ((zfwArm - 5445) / 2246) * 100 : 0;
+
+                document.getElementById('limDowWt').value = dowWt > 0 ? dowWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('limDowArm').value = dowArm > 0 ? dowArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('zfwWt').value = zfwWt > 0 ? zfwWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('zfwArm').value = zfwArm > 0 ? zfwArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('zfwMac').value = zfwMac > 0 ? zfwMac.toFixed(2) : '';
+                document.getElementById('zfwMacRes').value = zfwMac > 0 ? zfwMac.toFixed(2) : '';
+
+                // TOW = ZFW + Takeoff Fuel
+                const towWt = zfwWt + tofKg;
+                const towMom = zfwMom + tofMom;
+                const towArm = towWt > 0 ? towMom / towWt : 0;
+                const towMac = towArm > 0 ? ((towArm - 5445) / 2246) * 100 : 0;
+
+                document.getElementById('limToFuelWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('limToFuelArm').value = tofArm > 0 ? tofArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('towWt').value = towWt > 0 ? towWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('towArm').value = towArm > 0 ? towArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('towMac').value = towMac > 0 ? towMac.toFixed(2) : '';
+                document.getElementById('towMacRes').value = towMac > 0 ? towMac.toFixed(2) : '';
+
+                // LDW = TOW - Trip Fuel
+                const tripFuelKg = parseFloat(tripFuelOutput.value) || 0;
+                const tripFuelArm = tofArm > 0 ? tofArm : 6260;
+                const tripFuelMom = tripFuelKg * tripFuelArm;
+
+                const ldwWt = towWt - tripFuelKg;
+                const ldwMom = towMom - tripFuelMom;
+                const ldwArm = ldwWt > 0 ? ldwMom / ldwWt : 0;
+                const ldwMac = ldwArm > 0 ? ((ldwArm - 5445) / 2246) * 100 : 0;
+
+                document.getElementById('limTripFuelWt').value = tripFuelKg > 0 ? tripFuelKg.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('limTripFuelArm').value = tripFuelArm > 0 ? tripFuelArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('ldwWt').value = ldwWt > 0 ? ldwWt.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('ldwArm').value = ldwArm > 0 ? ldwArm.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
+                document.getElementById('ldwMac').value = ldwMac > 0 ? ldwMac.toFixed(2) : '';
+                document.getElementById('ldwMacRes').value = ldwMac > 0 ? ldwMac.toFixed(2) : '';
+
+                // Check Limits
+                const maxZfw = parseFloat(document.getElementById('maxZfw').value) || 7100;
+                const maxTow = parseFloat(document.getElementById('maxTow').value) || 7700;
+                const maxLdw = parseFloat(document.getElementById('maxLdw').value) || 7450;
+
+                updateStatusBadge('zfwStatus', zfwWt, maxZfw);
+                updateStatusBadge('towStatus', towWt, maxTow);
+                updateStatusBadge('ldwStatus', ldwWt, maxLdw);
+            }
+
+            function updateStatusBadge(elemId, actual, max) {
+                const elem = document.getElementById(elemId);
+                if (!elem) return;
+                if (actual > 0 && actual > max) {
+                    elem.innerHTML = '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">OVER</span>';
+                } else if (actual > 0) {
+                    elem.innerHTML = '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">OK</span>';
+                } else {
+                    elem.innerHTML = '<span class="px-2 py-0.5 rounded bg-gray-500/20 text-gray-400">-</span>';
+                }
             }
 
             document.getElementById('toolsWt').addEventListener('input', calculateSummaryData);
