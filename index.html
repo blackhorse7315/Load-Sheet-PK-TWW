@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CASA 212-200 Weight & Balance</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tambahkan library html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -121,30 +123,81 @@
         }
 
         @media (max-width: 639px) {
-            .data-row { padding: 0.625rem 0.75rem; }
-            .app-input { max-width: 130px; font-size: 0.8rem; }
+            .data-row { padding: 0.5rem 0.75rem; }
+            .app-input { max-width: 120px; font-size: 0.75rem; }
             .app-table th, .app-table td { padding: 0.5rem; font-size: 0.75rem; }
-            .app-input.table-input { max-width: 70px; padding: 0.25rem 0.4rem; }
-            .label-text { font-size: 0.8rem; }
+            .app-input.table-input { max-width: 60px; padding: 0.25rem 0.4rem; }
+            .label-text { font-size: 0.75rem; }
+            .header-icon { display: none; } /* Hide icons on small mobile to save space */
         }
         
-        @media print {
-            body { background: white !important; color: black !important; }
-            .data-row, .app-table td { background: white !important; border-color: #ccc !important; }
-            .app-input { background: transparent !important; color: black !important; border-color: #ccc !important; }
-            .top-bar, .print-hide { display: none !important; }
-            h2 { color: black !important; border-color: black !important; }
-            .text-cyan-400, .text-emerald-400, .text-amber-400, .text-fuchsia-400 { color: black !important; }
-            .app-table th { color: black !important; border-color: #ccc !important; }
+        /* CSS Khusus Print & Download PDF */
+        @media print, .pdf-export {
+            body, #wbForm { background: white !important; color: black !important; }
+            
+            /* Backgrounds to White */
+            .bg-\[\#1e293b\], .bg-slate-800, .bg-amber-900\/20, .bg-cyan-900\/20, .bg-emerald-900\/20, .bg-purple-900\/20, .bg-gradient-to-b { 
+                background: white !important; 
+                border-color: #000 !important; 
+            }
+            
+            /* Typography to Black */
+            .text-white, .text-gray-400, .text-gray-300, .text-gray-500, .text-gray-200, 
+            .text-cyan-400, .text-emerald-400, .text-amber-400, .text-purple-400, .text-blue-400, .text-red-500, .text-red-400 { 
+                color: black !important; 
+                text-shadow: none !important;
+            }
+
+            /* Inputs looking like plain text */
+            .app-input { 
+                background: transparent !important; 
+                color: black !important; 
+                border: none !important; 
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            select.app-input { appearance: none; background-image: none !important; }
+            
+            /* Tables */
+            .app-table th { color: black !important; border-bottom: 2px solid #000 !important; border-color: #000 !important; }
+            .app-table td { background: white !important; border: 1px solid #000 !important; border-radius: 0 !important; }
+            .app-table { border-collapse: collapse !important; border-spacing: 0 !important; }
+            
+            /* Rows & Borders */
+            .border-\[\#334155\] { border-color: #000 !important; }
+            .data-row { background: white !important; border: 1px solid #000 !important; box-shadow: none !important; }
+            
+            /* Hide UI controls */
+            .print-hide, .absolute.top-0, .header-icon, svg { display: none !important; }
+            
+            #chartContainer { background: #fff !important; border-color: #000 !important; }
         }
+
+        /* Spesifik untuk Export PDF (Mengatur Ukuran Kertas & Margin) */
+        .pdf-export {
+            width: 210mm !important; /* Lebar Kertas A4 */
+            padding: 10mm !important;
+            margin: 0 auto;
+        }
+        /* Kompres jarak (margin/padding) agar muat lebih banyak di A4 */
+        .pdf-export .mb-8, .pdf-export .mb-12 { margin-bottom: 4mm !important; }
+        .pdf-export .p-6 { padding: 4mm !important; }
+        .pdf-export .data-row { padding: 2mm 4mm !important; margin-bottom: 2px !important; }
+        .pdf-export .app-table th, .pdf-export .app-table td { padding: 2mm !important; }
     </style>
 </head>
-<body class="antialiased min-h-screen p-4 sm:p-6 lg:max-w-4xl lg:mx-auto">
+<body class="antialiased min-h-screen p-2 sm:p-6 lg:max-w-4xl lg:mx-auto">
 
     <form id="wbForm">
         
         <!-- HEADER / TITLE -->
-        <div class="mb-8 text-center bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-3xl border border-[#334155] shadow-lg relative overflow-hidden">
+        <div class="mb-8 text-center bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-6 rounded-[2rem] border border-[#334155] shadow-2xl relative overflow-hidden">
+            <!-- Tombol Download PDF -->
+            <button type="button" id="downloadPdfBtn" class="absolute top-4 right-4 z-20 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-3 sm:px-4 rounded-xl shadow-lg transition duration-300 flex items-center gap-2 text-xs sm:text-sm print-hide hover:-translate-y-0.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span class="hidden sm:inline">Download PDF</span>
+            </button>
+
             <!-- Decorative top line -->
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500"></div>
             
@@ -524,9 +577,9 @@
         </div>
 
         <!-- SECTION: SUMMARY (OPERATING DATA) -->
-        <div class="mb-12 overflow-x-auto">
-            <h2 class="text-lg font-bold text-white mb-3">Operating Data Summary (kg)</h2>
-            <div class="border-b border-[#334155] mb-4"></div>
+        <div class="mb-12 overflow-x-auto html2pdf__page-break">
+            <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <span class="p-1.5 bg-blue-500/20 rounded-lg header-icon">
 
             <table class="app-table">
                 <thead>
@@ -1060,6 +1113,37 @@
                 if (val > 0) {
                     this.value = val.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 }
+            });
+
+            // --- FUNGSI GENERATE PDF ---
+            document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+                const element = document.getElementById('wbForm');
+                const btn = document.getElementById('downloadPdfBtn');
+                
+                // Tambahkan kelas CSS khusus Export agar tampilan menjadi Kertas Putih Profesional
+                element.classList.add('pdf-export');
+                btn.style.display = 'none'; // Sembunyikan tombol sementara
+                
+                // Set Nama File Berdasarkan Tanggal & Noreg
+                const dateVal = document.getElementById('flightDate').value;
+                const noregVal = document.getElementById('noreg').value || 'Unknown';
+                const filename = `Loadsheet_${noregVal}_${dateVal}.pdf`;
+
+                // Konfigurasi html2pdf
+                const opt = {
+                    margin:       5, // mm
+                    filename:     filename,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa rasio Desktop agar rapi di A4
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Proses Generate dan Download
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Kembalikan ke tampilan Dark Mode semula setelah selesai
+                    element.classList.remove('pdf-export');
+                    btn.style.display = 'flex';
+                });
             });
 
             // Auto-fill Weight 90kg untuk pemilihan Crew
