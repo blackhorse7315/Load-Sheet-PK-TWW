@@ -562,15 +562,16 @@
         <!-- SECTION: PASSENGER LOADING -->
         <div class="mb-8 overflow-x-auto">
             <h2 class="text-lg font-bold text-white mb-3">Passenger Loading (kg)</h2>
-            <div class="border-b border-[#334155] mb-4"></div>
+            <div class="border-b border-white/10 mb-4"></div>
 
             <table class="app-table">
                 <thead>
                     <tr>
-                        <th class="text-left w-24">Seat</th>
-                        <th class="text-center">Pax Wght</th>
-                        <th class="text-center">Baggage</th>
-                        <th class="text-right w-20">Arm</th>
+                        <th class="text-left w-20">Seat</th>
+                        <th class="text-center w-16">Pax 1</th>
+                        <th class="text-center w-16">Pax 2</th>
+                        <th class="text-center w-16">Baggage</th>
+                        <th class="text-right w-16">Arm</th>
                         <th class="text-right">Moment</th>
                     </tr>
                 </thead>
@@ -580,11 +581,13 @@
                         <td class="font-bold text-gray-300">Row.1R</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">3,580</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="4310">
                         <td class="font-bold text-gray-300">Row.2R</td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">4,310</td>
@@ -594,12 +597,14 @@
                         <td class="font-bold text-gray-300">Row.3R</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">4,915</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="5645">
                         <td class="font-bold text-gray-300">Row.3L</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="text" class="app-input table-input opacity-30 cursor-not-allowed" disabled placeholder="-"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">5,645</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
@@ -608,12 +613,14 @@
                         <td class="font-bold text-gray-300">Row.4R</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">6,400</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="6400">
                         <td class="font-bold text-gray-300">Row.4L</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="text" class="app-input table-input opacity-30 cursor-not-allowed" disabled placeholder="-"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">6,400</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
@@ -622,12 +629,14 @@
                         <td class="font-bold text-gray-300">Row.5R</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">7,120</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="7120">
                         <td class="font-bold text-gray-300">Row.5L</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="text" class="app-input table-input opacity-30 cursor-not-allowed" disabled placeholder="-"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">7,120</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
@@ -636,18 +645,21 @@
                         <td class="font-bold text-gray-300">Row.6R</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">7,850</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="7850">
                         <td class="font-bold text-gray-300">Row.6L</td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
+                        <td class="text-center"><input type="text" class="app-input table-input opacity-30 cursor-not-allowed" disabled placeholder="-"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">7,850</td>
                         <td class="text-right"><input type="text" class="app-input table-input app-input-readonly pax-moment" readonly placeholder="0"></td>
                     </tr>
                     <tr class="pax-row" data-arm="7900">
                         <td class="font-bold text-gray-300">Row.7R</td>
+                        <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-center"><input type="number" class="app-input table-input" placeholder="0" min="0"></td>
                         <td class="text-right text-gray-500">7,900</td>
@@ -897,7 +909,8 @@
                     <thead>
                         <tr style="background: #e5e5e5;">
                             <th style="border: 1px solid black; padding: 4px;">SEAT ROW</th>
-                            <th style="border: 1px solid black; padding: 4px;">PAX WEIGHT (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">PAX 1 (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">PAX 2 (KG)</th>
                             <th style="border: 1px solid black; padding: 4px;">BAGGAGE (KG)</th>
                             <th style="border: 1px solid black; padding: 4px;">ARM</th>
                             <th style="border: 1px solid black; padding: 4px;">MOMENT</th>
@@ -1113,17 +1126,17 @@
 
                 paxRows.forEach(row => {
                     const inputs = row.querySelectorAll('.table-input');
-                    const weightInput = inputs[0]; 
-                    const bagInput = inputs[1]; 
+                    const pax1Weight = parseFloat(inputs[0].value);
+                    const pax2Weight = parseFloat(inputs[1].value); // Pax 2 extra
+                    const bagWeight = parseFloat(inputs[2].value) || 0; // Bagasi sekarang di index 2
                     const momentOutput = row.querySelector('.pax-moment');
                     
                     const arm = parseFloat(row.dataset.arm);
-                    const paxWeight = parseFloat(weightInput.value);
-                    const bagWeight = parseFloat(bagInput.value) || 0;
                     
-                    if (!isNaN(paxWeight) && paxWeight > 0) pobCount++;
+                    if (!isNaN(pax1Weight) && pax1Weight > 0) pobCount++;
+                    if (!isNaN(pax2Weight) && pax2Weight > 0) pobCount++; // Hitung POB orang kedua
 
-                    const totalWeightForRow = (isNaN(paxWeight) ? 0 : paxWeight) + bagWeight;
+                    const totalWeightForRow = (isNaN(pax1Weight) ? 0 : pax1Weight) + (isNaN(pax2Weight) ? 0 : pax2Weight) + bagWeight;
                     
                     if (totalWeightForRow > 0) {
                         const moment = totalWeightForRow * arm;
@@ -1142,8 +1155,9 @@
             crewWeightInputs.forEach(input => input.addEventListener('input', calculatePaxAndPOB));
             paxRows.forEach(row => {
                 const inputs = row.querySelectorAll('.table-input');
-                inputs[0].addEventListener('input', calculatePaxAndPOB);
-                inputs[1].addEventListener('input', calculatePaxAndPOB);
+                if(inputs[0]) inputs[0].addEventListener('input', calculatePaxAndPOB);
+                if(inputs[1]) inputs[1].addEventListener('input', calculatePaxAndPOB);
+                if(inputs[2]) inputs[2].addEventListener('input', calculatePaxAndPOB);
             });
             
             // 5. Operating Data Summary
@@ -1203,10 +1217,12 @@
                 let payloadWt = 0, payloadMom = 0;
                 paxRows.forEach(row => {
                     const inputs = row.querySelectorAll('.table-input');
-                    const paxWeight = parseFloat(inputs[0].value) || 0;
-                    const bagWeight = parseFloat(inputs[1].value) || 0;
+                    const pax1Weight = parseFloat(inputs[0].value) || 0;
+                    const pax2Weight = parseFloat(inputs[1].value) || 0;
+                    const bagWeight = parseFloat(inputs[2].value) || 0;
                     const arm = parseFloat(row.dataset.arm) || 0;
-                    const rowWt = paxWeight + bagWeight;
+                    const rowWt = pax1Weight + pax2Weight + bagWeight;
+                    
                     if (rowWt > 0) {
                         payloadWt += rowWt;
                         payloadMom += (rowWt * arm);
@@ -1415,16 +1431,25 @@
                 let paxHtml = '';
                 document.querySelectorAll('.pax-row').forEach(row => {
                     const seat = row.querySelector('td.font-bold').innerText.trim();
-                    const wt = row.querySelectorAll('.table-input')[0].value || '0';
-                    const bag = row.querySelectorAll('.table-input')[1].value || '0';
-                    const arm = row.querySelector('td:nth-child(4)').innerText.trim();
+                    const inputs = row.querySelectorAll('.table-input');
+                    const p1 = inputs[0].value || '0';
+                    const p2 = (inputs[1] && !inputs[1].disabled && inputs[1].value) ? inputs[1].value : '0';
+                    const bag = inputs[2].value || '0';
+                    const arm = row.querySelector('td:nth-last-child(2)').innerText.trim();
                     const mom = row.querySelector('.pax-moment').value || '0';
                     
-                    if (wt !== '0' || bag !== '0') {
-                        paxHtml += `<tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${seat}</td><td style="border: 1px solid black; padding: 4px;">${wt}</td><td style="border: 1px solid black; padding: 4px;">${bag}</td><td style="border: 1px solid black; padding: 4px;">${arm}</td><td style="border: 1px solid black; padding: 4px;">${mom}</td></tr>`;
+                    if (p1 !== '0' || p2 !== '0' || bag !== '0') {
+                        paxHtml += `<tr>
+                            <td style="border: 1px solid black; padding: 4px; font-weight:bold;">${seat}</td>
+                            <td style="border: 1px solid black; padding: 4px;">${p1}</td>
+                            <td style="border: 1px solid black; padding: 4px;">${p2}</td>
+                            <td style="border: 1px solid black; padding: 4px;">${bag}</td>
+                            <td style="border: 1px solid black; padding: 4px;">${arm}</td>
+                            <td style="border: 1px solid black; padding: 4px;">${mom}</td>
+                        </tr>`;
                     }
                 });
-                if(paxHtml === '') paxHtml = '<tr><td colspan="5" style="border: 1px solid black; padding: 4px;">No Passengers Loaded</td></tr>';
+                if(paxHtml === '') paxHtml = '<tr><td colspan="6" style="border: 1px solid black; padding: 4px;">No Passengers Loaded</td></tr>';
                 document.getElementById('pdf-out-pax-tbody').innerHTML = paxHtml;
 
                 // 4. Mengisi Data Summary Table
