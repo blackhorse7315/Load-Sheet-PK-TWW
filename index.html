@@ -252,19 +252,19 @@
             /* Chart Container (Beri Garis Tepi) */
             .pdf-export #chartContainer { background: #fff !important; border: 2px solid #000 !important; margin: 0 auto; max-width: 500px !important; }
             
-            /* Pencegahan Halaman Terpotong (Page Break Guard) */
-            .pdf-export .mb-8, .pdf-export .mb-12, .pdf-export table, .pdf-export .data-row { page-break-inside: avoid !important; }
+            /* Kompres jarak vertikal agar muat efisien di 2 halaman A4 */
+            .pdf-export .mb-8 { margin-bottom: 6mm !important; }
+            .pdf-export .mb-12 { margin-bottom: 6mm !important; }
         }
-
-        /* Spesifik untuk Set-up Kertas PDF */
-        .pdf-export {
-            width: 210mm !important; /* Lebar Kertas A4 */
-            padding: 10mm 12mm !important; /* Margin luar dokumen (Kiri Kanan Atas Bawah) */
-            margin: 0 auto;
+        
+        /* CSS Khusus Template PDF Baru (Hidden di tampilan web) */
+        #pdf-report-container {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 210mm; /* A4 width */
+            background: white;
         }
-        /* Kompres jarak vertikal agar muat efisien di 2 halaman A4 */
-        .pdf-export .mb-8 { margin-bottom: 6mm !important; }
-        .pdf-export .mb-12 { margin-bottom: 6mm !important; }
     </style>
 </head>
 <body class="antialiased min-h-screen p-2 sm:p-6 lg:max-w-4xl lg:mx-auto">
@@ -837,6 +837,143 @@
         </div>
     </form>
 
+    <!-- TEMPLATE LAPORAN PDF RESMI (TIDAK TERLIHAT DI APLIKASI WEB) -->
+    <div id="pdf-report-container">
+        <div id="pdf-report" class="bg-white text-black font-sans" style="padding: 15mm; width: 100%; box-sizing: border-box;">
+            
+            <!-- Header Dokumen -->
+            <div class="text-center mb-6" style="border-bottom: 2px solid black; padding-bottom: 10px;">
+                <h1 class="text-2xl font-bold mb-1" style="font-family: 'Arial', sans-serif;">LOAD SHEET CASA 212-200</h1>
+                <h2 class="text-lg font-bold">No. Registrasi <span id="pdf-out-noreg">_____</span> / SN. N102</h2>
+                <h3 class="text-sm font-semibold uppercase">PT. Transwisata Prima Aviation</h3>
+            </div>
+
+            <!-- Tabel 1: Flight & Fuel Data -->
+            <div style="display: flex; justify-content: space-between; gap: 10px; mb-4">
+                <table style="width: 48%; border-collapse: collapse; border: 1px solid black; font-size: 11px;">
+                    <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FLIGHT DATA</th></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold; width: 40%;">Date</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-date"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Aircraft Type</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-actype"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Customer</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-customer"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Route</td><td style="border: 1px solid black; padding: 4px;"><span id="pdf-out-from"></span> to <span id="pdf-out-dest"></span></td></tr>
+                </table>
+                <table style="width: 48%; border-collapse: collapse; border: 1px solid black; font-size: 11px;">
+                    <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FUEL SYSTEM (KG)</th></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold; width: 60%;">Flight Time</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-flighttime"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Fuel On Board</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-fob"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Start Engine Fuel</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-startfuel"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Trip Fuel</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-tripfuel"></td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Expected Landing Fuel</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-landingfuel"></td></tr>
+                </table>
+            </div>
+
+            <!-- Tabel 2: Basic & Crew Data -->
+            <div style="margin-top: 15px;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 11px; text-align: center;">
+                    <thead>
+                        <tr style="background: #e5e5e5;">
+                            <th style="border: 1px solid black; padding: 4px;">ITEM / POSITION</th>
+                            <th style="border: 1px solid black; padding: 4px; text-align: left;">NAME</th>
+                            <th style="border: 1px solid black; padding: 4px;">WEIGHT (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">ARM</th>
+                            <th style="border: 1px solid black; padding: 4px;">MOMENT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-out-crew-tbody">
+                        <!-- Data Empty & Crew akan disuntikkan via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tabel 3: Passenger Loading -->
+            <div style="margin-top: 15px; page-break-inside: avoid;">
+                <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid black; display: inline-block;">PASSENGER LOADING</h3>
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 11px; text-align: center;">
+                    <thead>
+                        <tr style="background: #e5e5e5;">
+                            <th style="border: 1px solid black; padding: 4px;">SEAT ROW</th>
+                            <th style="border: 1px solid black; padding: 4px;">PAX WEIGHT (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">BAGGAGE (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">ARM</th>
+                            <th style="border: 1px solid black; padding: 4px;">MOMENT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-out-pax-tbody">
+                        <!-- Data Pax akan disuntikkan via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="html2pdf__page-break"></div> <!-- Memisahkan Halaman 2 untuk Summary dan Chart -->
+
+            <!-- Tabel 4: Operating Data Summary -->
+            <div style="margin-top: 15px;">
+                <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid black; display: inline-block;">OPERATING DATA SUMMARY</h3>
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 11px;">
+                    <thead>
+                        <tr style="background: #e5e5e5;">
+                            <th style="border: 1px solid black; padding: 4px; text-align: left;">ITEM</th>
+                            <th style="border: 1px solid black; padding: 4px; text-align: right;">WEIGHT (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px; text-align: right;">ARM</th>
+                            <th style="border: 1px solid black; padding: 4px; text-align: right;">MOMENT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-out-summary-tbody">
+                        <!-- Data Summary disuntikkan via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tabel 5: Limitation Summary -->
+            <div style="margin-top: 15px; page-break-inside: avoid;">
+                <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid black; display: inline-block;">LIMITATION & MAC SUMMARY</h3>
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 11px; text-align: center;">
+                    <thead>
+                        <tr style="background: #e5e5e5;">
+                            <th style="border: 1px solid black; padding: 4px;">LIMIT</th>
+                            <th style="border: 1px solid black; padding: 4px;">MAX (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">ACTUAL (KG)</th>
+                            <th style="border: 1px solid black; padding: 4px;">STATUS</th>
+                            <th style="border: 1px solid black; padding: 4px;">% MAC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-out-limitation-tbody">
+                        <!-- Data Limitation disuntikkan via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bagian Chart -->
+            <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
+                <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
+                <div style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff;">
+                    <!-- Canvas khusus cetak PDF -->
+                    <canvas id="pdf-cgChart" width="600" height="600" style="width: 500px; height: 500px; display: block;"></canvas>
+                </div>
+                <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
+                    <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
+                    <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border:1px solid #000; margin-right:5px;"></span>TOW</span>
+                    <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border:1px solid #000; margin-right:5px; transform: rotate(45deg);"></span>LDW</span>
+                </div>
+            </div>
+
+            <!-- Footer Tanda Tangan -->
+            <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center;">
+                <div style="width: 30%;">
+                    <p>Prepared By,</p>
+                    <br><br><br>
+                    <p style="border-top: 1px solid black; padding-top: 5px;">Flight Operations Officer</p>
+                </div>
+                <div style="width: 30%;">
+                    <p>Acknowledged By,</p>
+                    <br><br><br>
+                    <p style="border-top: 1px solid black; padding-top: 5px;">Pilot in Command</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -1196,35 +1333,119 @@
                 }
             });
 
-            // --- FUNGSI GENERATE PDF ---
+            // --- FUNGSI GENERATE PDF TERBARU (FORMAL REPORT) ---
             document.getElementById('downloadPdfBtn').addEventListener('click', function() {
-                const element = document.getElementById('wbForm');
                 const btn = document.getElementById('downloadPdfBtn');
+                btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="hidden sm:inline">Generating...</span>';
                 
-                // Tambahkan kelas CSS khusus Export agar tampilan menjadi Kertas Putih Profesional
-                element.classList.add('pdf-export');
-                btn.style.display = 'none'; // Sembunyikan tombol sementara
+                // 1. Mengisi Data Flight & Fuel
+                document.getElementById('pdf-out-date').innerText = document.getElementById('flightDate').value;
+                document.getElementById('pdf-out-noreg').innerText = document.getElementById('noreg').value || '_____';
+                document.getElementById('pdf-out-actype').innerText = document.getElementById('acType').value || '-';
+                document.getElementById('pdf-out-customer').innerText = document.getElementById('customer').value || '-';
+                document.getElementById('pdf-out-from').innerText = document.getElementById('depFrom').value || '-';
+                document.getElementById('pdf-out-dest').innerText = document.getElementById('arrDest').value || '-';
                 
-                // Set Nama File Berdasarkan Tanggal & Noreg
+                document.getElementById('pdf-out-flighttime').innerText = document.getElementById('flightTime').value || '00:00';
+                document.getElementById('pdf-out-fob').innerText = document.getElementById('fob').value ? document.getElementById('fob').value + ' Lbs' : '-';
+                document.getElementById('pdf-out-startfuel').innerText = document.getElementById('startFuel').value ? document.getElementById('startFuel').options[document.getElementById('startFuel').selectedIndex].text + ' Lbs' : '-';
+                document.getElementById('pdf-out-tripfuel').innerText = document.getElementById('tripFuel').value || '-';
+                document.getElementById('pdf-out-landingfuel').innerText = document.getElementById('landingFuel').value || '-';
+
+                // 2. Mengisi Data Empty Weight & Crew
+                let crewHtml = `
+                    <tr>
+                        <td style="border: 1px solid black; padding: 4px; font-weight:bold;">Empty Weight</td>
+                        <td style="border: 1px solid black; padding: 4px; text-align:left;">Basic Aircraft</td>
+                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyWeight').value}</td>
+                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyArm').value}</td>
+                        <td style="border: 1px solid black; padding: 4px;">${document.getElementById('emptyMoment').value}</td>
+                    </tr>
+                `;
+                
+                document.querySelectorAll('.crew-row').forEach(row => {
+                    const pos = row.querySelector('td.font-bold').innerText.trim();
+                    const select = row.querySelector('select');
+                    const name = select.options[select.selectedIndex].text;
+                    const wt = row.querySelector('.crew-weight').value;
+                    const arm = row.querySelector('td:nth-child(4)').innerText.trim();
+                    const mom = row.querySelector('.crew-moment').value;
+                    
+                    if(wt) {
+                        crewHtml += `<tr><td style="border: 1px solid black; padding: 4px;">${pos}</td><td style="border: 1px solid black; padding: 4px; text-align:left;">${name}</td><td style="border: 1px solid black; padding: 4px;">${wt}</td><td style="border: 1px solid black; padding: 4px;">${arm}</td><td style="border: 1px solid black; padding: 4px;">${mom}</td></tr>`;
+                    }
+                });
+
+                // Tambahkan baris Tools
+                const toolsWt = document.getElementById('toolsWt').value;
+                if(toolsWt) {
+                    crewHtml += `<tr><td style="border: 1px solid black; padding: 4px;">TOOLS</td><td style="border: 1px solid black; padding: 4px; text-align:left;">Equipment</td><td style="border: 1px solid black; padding: 4px;">${toolsWt}</td><td style="border: 1px solid black; padding: 4px;">9,970</td><td style="border: 1px solid black; padding: 4px;">${document.getElementById('toolsMom').value}</td></tr>`;
+                }
+                document.getElementById('pdf-out-crew-tbody').innerHTML = crewHtml;
+
+                // 3. Mengisi Data Passenger
+                let paxHtml = '';
+                document.querySelectorAll('.pax-row').forEach(row => {
+                    const seat = row.querySelector('td.font-bold').innerText.trim();
+                    const wt = row.querySelectorAll('.table-input')[0].value || '0';
+                    const bag = row.querySelectorAll('.table-input')[1].value || '0';
+                    const arm = row.querySelector('td:nth-child(4)').innerText.trim();
+                    const mom = row.querySelector('.pax-moment').value || '0';
+                    
+                    if (wt !== '0' || bag !== '0') {
+                        paxHtml += `<tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${seat}</td><td style="border: 1px solid black; padding: 4px;">${wt}</td><td style="border: 1px solid black; padding: 4px;">${bag}</td><td style="border: 1px solid black; padding: 4px;">${arm}</td><td style="border: 1px solid black; padding: 4px;">${mom}</td></tr>`;
+                    }
+                });
+                if(paxHtml === '') paxHtml = '<tr><td colspan="5" style="border: 1px solid black; padding: 4px;">No Passengers Loaded</td></tr>';
+                document.getElementById('pdf-out-pax-tbody').innerHTML = paxHtml;
+
+                // 4. Mengisi Data Summary Table
+                const val = (id) => document.getElementById(id).value || '0';
+                document.getElementById('pdf-out-summary-tbody').innerHTML = `
+                    <tr><td style="border: 1px solid black; padding: 4px; text-align:left;">Empty Weight</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumEwWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumEwArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumEwMom')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; text-align:left;">Operating Item (Crew + Tools)</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumOpItemWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumOpItemArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumOpItemMom')}</td></tr>
+                    <tr style="background:#fef3c7;"><td style="border: 1px solid black; padding: 4px; text-align:left; font-weight:bold;">Dry Operating Wt (DOW)</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('dowWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('dowArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('dowMom')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; text-align:left;">Payload (Pax + Baggage)</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumPayloadWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumPayloadArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumPayloadMom')}</td></tr>
+                    <tr style="background:#e0f2fe;"><td style="border: 1px solid black; padding: 4px; text-align:left; font-weight:bold;">Zero Fuel Weight (ZFW)</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumZfwWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumZfwArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumZfwMom')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; text-align:left;">Takeoff Fuel</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('tofKgWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('tofArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('tofMom')}</td></tr>
+                    <tr style="background:#f3e8ff;"><td style="border: 1px solid black; padding: 4px; text-align:left; font-weight:bold;">Takeoff Weight (TOW)</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumTowWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumTowArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumTowMom')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; text-align:left;">Trip Fuel</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumTripFuelWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumTripFuelArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumTripFuelMom')}</td></tr>
+                    <tr style="background:#d1fae5;"><td style="border: 1px solid black; padding: 4px; text-align:left; font-weight:bold;">Landing Weight (LDW)</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumLdwWt')}</td><td style="border: 1px solid black; padding: 4px; text-align:right;">${val('sumLdwArm')}</td><td style="border: 1px solid black; padding: 4px; text-align:right; font-weight:bold;">${val('sumLdwMom')}</td></tr>
+                `;
+
+                // 5. Mengisi Data Limitation
+                const getStatus = (id) => document.getElementById(id).innerText.trim();
+                document.getElementById('pdf-out-limitation-tbody').innerHTML = `
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">MZFW</td><td style="border: 1px solid black; padding: 4px;">7100</td><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${val('zfwWt')}</td><td style="border: 1px solid black; padding: 4px;">${getStatus('zfwStatus')}</td><td style="border: 1px solid black; padding: 4px;">${val('zfwMacRes')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">MTOW</td><td style="border: 1px solid black; padding: 4px;">7700</td><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${val('towWt')}</td><td style="border: 1px solid black; padding: 4px;">${getStatus('towStatus')}</td><td style="border: 1px solid black; padding: 4px;">${val('towMacRes')}</td></tr>
+                    <tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">MLDW</td><td style="border: 1px solid black; padding: 4px;">7450</td><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${val('ldwWt')}</td><td style="border: 1px solid black; padding: 4px;">${getStatus('ldwStatus')}</td><td style="border: 1px solid black; padding: 4px;">${val('ldwMacRes')}</td></tr>
+                `;
+
+                // 6. Menyalin Chart ke Template PDF
+                const sourceChart = document.getElementById('cgChart');
+                const pdfChart = document.getElementById('pdf-cgChart');
+                const pCtx = pdfChart.getContext('2d');
+                // Mengatasi resolusi canvas
+                pCtx.clearRect(0, 0, pdfChart.width, pdfChart.height);
+                pCtx.drawImage(sourceChart, 0, 0, pdfChart.width, pdfChart.height);
+
+                // 7. Mulai proses generate PDF
+                const element = document.getElementById('pdf-report');
                 const dateVal = document.getElementById('flightDate').value;
                 const noregVal = document.getElementById('noreg').value || 'Unknown';
                 const filename = `Loadsheet_${noregVal}_${dateVal}.pdf`;
 
-                // Konfigurasi html2pdf yang Lebih Presisi untuk Dokumen Resmi
                 const opt = {
-                    margin:       [5, 0, 5, 0], // Margin dalam PDF generator [Atas, Kanan, Bawah, Kiri]
+                    margin:       [5, 5, 5, 5],
                     filename:     filename,
-                    image:        { type: 'jpeg', quality: 1 }, // Kualitas Tinggi
-                    html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa dimensi lebar konstan
-                    pagebreak:    { mode: ['css', 'legacy'] }, // Patuh pada perintah "page-break-inside: avoid"
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } // Ukuran Kertas A4 Mutlak
+                    image:        { type: 'jpeg', quality: 1 },
+                    html2canvas:  { scale: 2, useCORS: true }, 
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                // Proses Generate dan Download
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Kembalikan ke tampilan Dark Mode semula setelah selesai
-                    element.classList.remove('pdf-export');
-                    btn.style.display = 'flex';
+                    // Kembalikan teks tombol
+                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span class="hidden sm:inline">Download PDF</span>';
                 });
             });
 
