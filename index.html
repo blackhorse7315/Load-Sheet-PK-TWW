@@ -435,7 +435,7 @@
 
             <!-- SECTION: FUEL SYSTEM -->
             <div class="mb-8">
-                <h2 class="text-lg font-bold text-white mb-3">Fuel System (kg)</h2>
+                <h2 class="text-lg font-bold text-white mb-3">Fuel System (lbs)</h2>
                 <div class="border-b border-[#334155] mb-4"></div>
                 <div class="data-row">
                     <div class="data-label"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Flight Time (HH:MM)</div>
@@ -610,7 +610,7 @@
             </div>
         </form>
 
-        <!-- HIDDEN PDF TEMPLATE (Unchanged from original) -->
+        <!-- HIDDEN PDF TEMPLATE -->
         <div id="pdf-report-container">
             <div id="pdf-report" class="bg-white text-black font-sans" style="padding: 15mm; width: 100%; box-sizing: border-box;">
                 <div class="text-center mb-6" style="border-bottom: 2px solid black; padding-bottom: 10px;">
@@ -629,7 +629,7 @@
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Route</td><td style="border: 1px solid black; padding: 4px;"><span id="pdf-out-from"></span> to <span id="pdf-out-dest"></span></td></tr>
                     </table>
                     <table style="width: 48%; border-collapse: collapse; border: 1px solid black; font-size: 11px;">
-                        <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FUEL SYSTEM</th></tr>
+                        <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FUEL SYSTEM (LBS)</th></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold; width: 60%;">Flight Time</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-flighttime"></td></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Fuel On Board</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-fob"></td></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Start Engine Fuel</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-startfuel"></td></tr>
@@ -761,7 +761,6 @@
                 }
                 firebaseUserId = auth.currentUser?.uid;
                 
-                // Mulai mendengarkan data dari Firebase Firestore secara Real-Time
                 if (firebaseUserId) {
                     listenToPublicData();
                 }
@@ -771,25 +770,22 @@
         }
 
         function listenToPublicData() {
-            // Listener untuk Pilots
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'pilots'), (snap) => {
                 globalPilots = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 if (globalPilots.length === 0) {
-                    seedDefaultPilots(); // Isi dengan data default jika kosong
+                    seedDefaultPilots();
                 } else {
                     updatePilotDropdowns();
                     if (!adminSection.classList.contains('hidden')) renderAdminData();
                 }
             }, (err) => console.error("Pilot DB Error:", err));
 
-            // Listener untuk Users
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
                 globalUsers = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 if (!adminSection.classList.contains('hidden')) renderAdminData();
             }, (err) => console.error("User DB Error:", err));
         }
 
-        // Fungsi bantuan untuk mengisi default pilot jika database baru/kosong
         async function seedDefaultPilots() {
             const defaults = [
                 { name: "Capt. Sofian M. L. Tobing", sign: "https://lh3.googleusercontent.com/d/1-JHc4VmCtUrl8ioneNeQ1tt32eaFJwC8" },
@@ -804,7 +800,6 @@
             }
         }
 
-        // Jalankan Autentikasi Saat Web Dimuat
         initAuth();
 
         // -------------------------------------------------------------
@@ -863,7 +858,6 @@
             submitBtn.innerText = "Registering...";
 
             try {
-                // Simpan User Baru ke Firebase Firestore menggunakan addDoc agar ID dibuat otomatis
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), { 
                     name: name, 
                     username: user, 
@@ -893,13 +887,11 @@
             const u = document.getElementById('loginUsername').value;
             const p = document.getElementById('loginPassword').value;
             
-            // Check Admin
             if (u === 'admin' && p === 'admin321') {
                 showAdminPage();
                 return;
             }
 
-            // Check Firebase Users
             const matchedUser = globalUsers.find(user => user.username === u && user.password === p);
 
             if (matchedUser) {
@@ -924,7 +916,6 @@
             loginError.classList.add('hidden');
             displayActiveUser.innerText = name;
             
-            // Set date
             document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
         }
 
@@ -952,7 +943,6 @@
         }
 
         function renderAdminData() {
-            // Render Users dari globalUsers (Firebase)
             const tbody = document.getElementById('adminUserTableBody');
             tbody.innerHTML = '';
             globalUsers.forEach((u, i) => {
@@ -970,7 +960,6 @@
                 `;
             });
 
-            // Render Pilots dari globalPilots (Firebase)
             const pGrid = document.getElementById('adminPilotGrid');
             pGrid.innerHTML = '';
             globalPilots.forEach(p => {
@@ -985,7 +974,6 @@
                 `;
             });
 
-            // Render Engineers
             const eList = document.getElementById('adminEngineerList');
             eList.innerHTML = '';
             adminEngineers.forEach(e => {
@@ -1000,7 +988,6 @@
             });
         }
 
-        // Add/Edit User Logic ke Firebase
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!firebaseUserId) {
@@ -1064,7 +1051,6 @@
         window.deleteUser = async function(id) {
             if (!firebaseUserId) return;
             try {
-                // Menghapus langsung untuk menghindari penggunaan confirm() / alert() bawaan browser
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
                 showToast("User deleted from database", "success");
             } catch(e) {
@@ -1177,7 +1163,6 @@
                     closePilotModal();
                     showToast("Pilot duplicated!", "info");
                     
-                    // Otomatis buka duplikat barunya untuk diedit
                     setTimeout(() => {
                         openPilotModal(docRef.id);
                     }, 300);
@@ -1203,7 +1188,6 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translate(-50%, -1rem)'; }, 3000);
         }
 
-        // App DOM Variables
         const noregSelect = document.getElementById('noreg');
         const acTypeInput = document.getElementById('acType');
         const flightTimeInput = document.getElementById('flightTime');
@@ -1225,16 +1209,14 @@
             const flightTimeVal = flightTimeInput.value;
             const fobLbs = parseFloat(fobInput.value) || 0;
             const startFuelLbs = parseFloat(startFuelSelect.value) || 100;
-            const LBS_TO_KG = 0.45359237;
-            const KG_TO_LBS = 1 / LBS_TO_KG;
+            const KG_TO_LBS = 1 / 0.45359237;
             
-            let tripFuelKg = 0;
             let tripFuelLbs = 0;
 
             if (flightTimeVal) {
                 const [hours, minutes] = flightTimeVal.split(':');
                 const totalMinutes = (parseInt(hours, 10) * 60) + parseInt(minutes, 10);
-                tripFuelKg = totalMinutes * 4.536;
+                const tripFuelKg = totalMinutes * 4.536;
                 tripFuelLbs = tripFuelKg * KG_TO_LBS;
                 tripFuelOutput.value = tripFuelLbs.toFixed(0);
             } else tripFuelOutput.value = '';
@@ -1346,8 +1328,12 @@
             document.getElementById('sumZfwMom').value = zfwWt > 0 ? zfwMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
             setLim('Dow', dowWt, dowArm); setLim('zfw', zfwWt, zfwArm, zfwMac);
 
-            const tofLbs = Math.max(0, (parseFloat(document.getElementById('fob').value)||0) - (parseFloat(document.getElementById('startFuel').value)||100));
-            const tofKg = tofLbs * LBS_TO_KG, tofArm = parseFloat(document.getElementById('tofArm').value.replace(/,/g, '')) || 0;
+            const fobLbsVal = parseFloat(document.getElementById('fob').value) || 0;
+            const startFuelLbsVal = parseFloat(document.getElementById('startFuel').value) || 100;
+            const tofLbs = Math.max(0, fobLbsVal - startFuelLbsVal);
+            const tofKg = tofLbs * LBS_TO_KG;
+            const tofArm = parseFloat(document.getElementById('tofArm').value.replace(/,/g, '')) || 0;
+            
             document.getElementById('tofKgWt').value = tofKg > 0 ? tofKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
             document.getElementById('tofMom').value = tofKg > 0 && tofArm > 0 ? (tofKg * tofArm).toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
 
@@ -1411,7 +1397,6 @@
             i.value = this.value !== "" ? 90 : ""; calculatePaxAndPOB(); calculateSummaryData();
         }));
 
-        // Firebase Sync & History functions
         function serializeFormData() {
             const data = {
                 timestamp: Date.now(), flightDate: document.getElementById('flightDate').value, noreg: document.getElementById('noreg').value,
@@ -1430,7 +1415,7 @@
             const set = (id, val) => { if(document.getElementById(id) && val !== undefined) document.getElementById(id).value = val; };
             set('flightDate', data.flightDate); set('noreg', data.noreg); set('acType', data.acType); set('customer', data.customer);
             set('depFrom', data.depFrom); set('arrDest', data.arrDest); set('flightTime', data.flightTime); set('fob', data.fob);
-            set('startFuel', data.startFuel||"45"); set('emptyWeight', data.emptyWeight||"4853.80"); set('emptyArm', data.emptyArm||"6,070"); set('toolsWt', data.toolsWt||"50");
+            set('startFuel', data.startFuel||"100"); set('emptyWeight', data.emptyWeight||"4853.80"); set('emptyArm', data.emptyArm||"6,070"); set('toolsWt', data.toolsWt||"50");
             
             if(data.crew) document.querySelectorAll('.crew-row').forEach((row, i) => { if(data.crew[i]) { row.querySelector('select').value = data.crew[i].name; row.querySelector('.crew-weight').value = data.crew[i].weight; } });
             if(data.pax) document.querySelectorAll('.pax-row').forEach((row, i) => { if(data.pax[i]) { const inps = row.querySelectorAll('.table-input'); if(inps[0]) inps[0].value=data.pax[i].p1; if(inps[1]&&!inps[1].disabled) inps[1].value=data.pax[i].p2; if(inps[2]) inps[2].value=data.pax[i].bag; } });
@@ -1445,7 +1430,7 @@
             document.getElementById('wbForm').reset();
             document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('emptyWeight').value = "4853.80"; document.getElementById('emptyArm').value = "6,070";
-            document.getElementById('toolsWt').value = "50"; document.getElementById('startFuel').value = "45";
+            document.getElementById('toolsWt').value = "50"; document.getElementById('startFuel').value = "100";
             ['noreg', 'flightTime', 'fob', 'emptyWeight', 'emptyArm', 'toolsWt'].forEach(id => { const el = document.getElementById(id); if(el) el.dispatchEvent(new Event('input', {bubbles: true})); });
             document.querySelectorAll('.crew-weight, .table-input').forEach(el => el.dispatchEvent(new Event('input', {bubbles: true})));
             showToast("Form cleared for New Data", 'info');
@@ -1543,7 +1528,7 @@
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MTOW</td><td style="border:1px solid black;padding:4px;">7700</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('towWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('towStatus')}</td><td style="border:1px solid black;padding:4px;">${v('towMacRes')}</td></tr>
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MLDW</td><td style="border:1px solid black;padding:4px;">7450</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('ldwWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('ldwStatus')}</td><td style="border:1px solid black;padding:4px;">${v('ldwMacRes')}</td></tr>`;
 
-                // Chart for PDF (Menggunakan hasil Canvas yang sudah jadi sebagai Gambar agar 100% dirender)
+                // Grab the live canvas chart as image
                 const sourceCanvas = document.getElementById('cgChart');
                 if (sourceCanvas) {
                     const chartDataUrl = sourceCanvas.toDataURL('image/png', 1.0);
@@ -1551,11 +1536,11 @@
                 }
 
                 const ep = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-                const lImg = document.getElementById('pdf-out-logo'); 
-                if (!lImg.src || lImg.src.includes('R0lGOD')) { 
-                    lImg.src = await fetchImageAsBase64("https://lh3.googleusercontent.com/d/1WNcGjsZ9_Fp54xzOl01EYRqM6-wY5Zh7") || ep; 
-                    lImg.style.display = lImg.src !== ep ? 'block':'none'; 
-                }
+                const lImg = document.getElementById('pdf-out-logo');
+                const logoB64 = await fetchImageAsBase64("https://lh3.googleusercontent.com/d/1WNcGjsZ9_Fp54xzOl01EYRqM6-wY5Zh7");
+                lImg.src = logoB64 || ep;
+                lImg.style.display = logoB64 ? 'block' : 'none';
+
                 document.getElementById('pdf-out-pic-name').innerText = pN||'______________________'; document.getElementById('pdf-out-sic-name').innerText = sN||'______________________';
                 
                 const pSign = document.getElementById('pdf-out-pic-sign');
@@ -1568,9 +1553,6 @@
             } catch (err) { alert("PDF Error: " + err); } finally { btn.innerHTML = orig; btn.disabled=false; }
         });
 
-        // -------------------------------------------------------------
-        // DRAW CHART KANVAS
-        // -------------------------------------------------------------
         function drawChart(zfwMac, zfwWt, towMac, towWt, ldwMac, ldwWt) {
             const canvas = document.getElementById('cgChart'), ctx = canvas.getContext('2d'), container = document.getElementById('chartContainer');
             const w = container.clientWidth || 600, h = container.clientHeight || 600;
@@ -1616,78 +1598,47 @@
             if(zfwWt>0&&towWt>0&&ldwWt>0){ ctx.strokeStyle='#94a3b8'; ctx.lineWidth=1.5; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(mX(towMac),mY(towWt)); ctx.lineTo(mX(ldwMac),mY(ldwWt)); ctx.lineTo(mX(zfwMac),mY(zfwWt)); ctx.stroke(); ctx.setLineDash([]); }
         }
 
-        // Initialize Defaults
         updatePilotDropdowns();
         calculatePaxAndPOB(); calculateSummaryData();
 
-        // -------------------------------------------------------------
-        // PWA INSTALLATION & SERVICE WORKER LOGIC
-        // -------------------------------------------------------------
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Update UI notify the user they can install the PWA
             const installBtn = document.getElementById('installAppBtn');
             if(installBtn) installBtn.classList.remove('hidden');
         });
 
         document.getElementById('installAppBtn')?.addEventListener('click', async () => {
             if (deferredPrompt) {
-                // Show the install prompt
                 deferredPrompt.prompt();
-                // Wait for the user to respond to the prompt
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     document.getElementById('installAppBtn').classList.add('hidden');
                 }
-                // We've used the prompt, and can't use it again, throw it away
                 deferredPrompt = null;
             }
         });
 
         window.addEventListener('appinstalled', () => {
-            // Hide the app-provided install promotion
             document.getElementById('installAppBtn')?.classList.add('hidden');
-            // Clear the deferredPrompt so it can be garbage collected
             deferredPrompt = null;
-            console.log('PWA was installed');
         });
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Generate Dynamic Service Worker blob
                 const swCode = `
                     const CACHE_NAME = 'casa-wb-cache-v1';
-                    self.addEventListener('install', (event) => {
-                        self.skipWaiting();
-                    });
-                    self.addEventListener('activate', (event) => {
-                        event.waitUntil(self.clients.claim());
-                    });
+                    self.addEventListener('install', (event) => { self.skipWaiting(); });
+                    self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
                     self.addEventListener('fetch', (event) => {
-                        event.respondWith(
-                            fetch(event.request).catch(() => {
-                                return new Response('Network error and offline caching is strictly simulated in this PWA blob.');
-                            })
-                        );
+                        event.respondWith(fetch(event.request).catch(() => new Response('Offline')));
                     });
                 `;
                 const blob = new Blob([swCode], {type: 'application/javascript'});
-                const swUrl = URL.createObjectURL(blob);
-                
-                navigator.serviceWorker.register(swUrl)
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log(err));
             });
         }
-
     </script>
 </body>
 </html>
