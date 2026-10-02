@@ -795,8 +795,9 @@
                 { name: "FO. Wawan Setiawan", sign: "https://lh3.googleusercontent.com/d/1e_ExPNkan2xaVJTj06E3C4Kp264rYYWg" },
                 { name: "FO. Henaldy Arifia S.", sign: "https://lh3.googleusercontent.com/d/1c6-4MnWpA7YwUZzK_-93a6bTkTzTe9W2" }
             ];
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'pilots');
             for (const p of defaults) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pilots', crypto.randomUUID()), p);
+                await addDoc(colRef, p);
             }
         }
 
@@ -859,8 +860,8 @@
             submitBtn.innerText = "Registering...";
 
             try {
-                // Simpan User Baru ke Firebase Firestore
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', crypto.randomUUID()), { 
+                // Simpan User Baru ke Firebase Firestore menggunakan addDoc agar ID dibuat otomatis
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), { 
                     name: name, 
                     username: user, 
                     password: pass 
@@ -999,21 +1000,23 @@
         // Add/Edit User Logic ke Firebase
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!firebaseUserId) return;
+            if (!firebaseUserId) {
+                showToast("Database not connected", "error");
+                return;
+            }
 
             const id = document.getElementById('editUserId').value;
             const name = document.getElementById('modalName').value;
             const user = document.getElementById('modalUsername').value;
             const pass = document.getElementById('modalPassword').value;
             
-            const docId = id || crypto.randomUUID();
-            
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', docId), { 
-                    name: name, 
-                    username: user, 
-                    password: pass 
-                });
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                if (id) {
+                    await setDoc(doc(colRef, id), { name: name, username: user, password: pass });
+                } else {
+                    await addDoc(colRef, { name: name, username: user, password: pass });
+                }
                 showToast("User saved successfully", "success");
             } catch (err) {
                 console.error(err);
@@ -1090,19 +1093,22 @@
 
         document.getElementById('pilotForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!firebaseUserId) return;
+            if (!firebaseUserId) {
+                showToast("Database not connected", "error");
+                return;
+            }
 
             const id = document.getElementById('editPilotId').value;
             const name = document.getElementById('modalPilotName').value;
             const sign = document.getElementById('modalPilotSign').value;
             
-            const docId = id || crypto.randomUUID();
-            
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pilots', docId), { 
-                    name: name, 
-                    sign: sign 
-                });
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'pilots');
+                if (id) {
+                    await setDoc(doc(colRef, id), { name: name, sign: sign });
+                } else {
+                    await addDoc(colRef, { name: name, sign: sign });
+                }
                 showToast("Pilot saved successfully", "success");
             } catch (err) {
                 showToast("Failed to save pilot", "error");
@@ -1160,9 +1166,8 @@
             
             const pilotToDup = globalPilots.find(p => p.id === id);
             if (pilotToDup) {
-                const newId = crypto.randomUUID();
                 try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pilots', newId), {
+                    const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'pilots'), {
                         name: pilotToDup.name + " (Copy)",
                         sign: pilotToDup.sign
                     });
@@ -1171,7 +1176,7 @@
                     
                     // Otomatis buka duplikat barunya untuk diedit
                     setTimeout(() => {
-                        openPilotModal(newId);
+                        openPilotModal(docRef.id);
                     }, 300);
                 } catch (e) {
                     showToast("Failed to duplicate pilot", "error");
