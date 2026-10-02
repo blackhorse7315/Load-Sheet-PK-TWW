@@ -201,6 +201,9 @@
                 </button>
                 
                 <p class="text-center text-sm text-gray-400 mt-4">Already have an account? <a href="#" id="showLoginBtn" class="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Sign in</a></p>
+                <div class="text-center text-xs text-gray-500 mt-4 border-t border-slate-700/50 pt-4">
+                    <p>copyright Skyops Solution @2026<br>build 02 Oct 2026</p>
+                </div>
             </form>
         </div>
     </div>
@@ -447,11 +450,11 @@
                     <input type="number" id="fob" class="app-input font-mono" placeholder="0" min="0">
                 </div>
                 <div class="data-row">
-                    <div class="data-label !text-blue-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Trip Fuel (Auto)</div>
+                    <div class="data-label !text-blue-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>Trip Fuel (Auto) (lbs)</div>
                     <input type="text" id="tripFuel" class="app-input app-input-readonly font-mono !text-blue-400 font-bold" readonly placeholder="0">
                 </div>
                 <div class="data-row">
-                    <div class="data-label !text-emerald-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Expected Landing Fuel</div>
+                    <div class="data-label !text-emerald-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Expected Landing Fuel (lbs)</div>
                     <input type="text" id="landingFuel" class="app-input app-input-readonly font-mono !text-emerald-400 font-bold" readonly placeholder="0">
                 </div>
                 <div id="fuelWarning" class="hidden mt-2 p-3 bg-red-900/30 border border-red-500/50 rounded-lg text-red-400 text-sm font-semibold flex items-center gap-2">
@@ -626,7 +629,7 @@
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Route</td><td style="border: 1px solid black; padding: 4px;"><span id="pdf-out-from"></span> to <span id="pdf-out-dest"></span></td></tr>
                     </table>
                     <table style="width: 48%; border-collapse: collapse; border: 1px solid black; font-size: 11px;">
-                        <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FUEL SYSTEM (KG)</th></tr>
+                        <tr><th colspan="2" style="background: #e5e5e5; border: 1px solid black; padding: 4px;">FUEL SYSTEM</th></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold; width: 60%;">Flight Time</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-flighttime"></td></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Fuel On Board</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-fob"></td></tr>
                         <tr><td style="border: 1px solid black; padding: 4px; font-weight: bold;">Start Engine Fuel</td><td style="border: 1px solid black; padding: 4px;" id="pdf-out-startfuel"></td></tr>
@@ -1223,21 +1226,23 @@
             const fobLbs = parseFloat(fobInput.value) || 0;
             const startFuelLbs = parseFloat(startFuelSelect.value) || 100;
             const LBS_TO_KG = 0.45359237;
-            const fobKg = fobLbs * LBS_TO_KG;
-            const startFuelKg = startFuelLbs * LBS_TO_KG;
+            const KG_TO_LBS = 1 / LBS_TO_KG;
+            
             let tripFuelKg = 0;
+            let tripFuelLbs = 0;
 
             if (flightTimeVal) {
                 const [hours, minutes] = flightTimeVal.split(':');
                 const totalMinutes = (parseInt(hours, 10) * 60) + parseInt(minutes, 10);
                 tripFuelKg = totalMinutes * 4.536;
-                tripFuelOutput.value = tripFuelKg.toFixed(0);
+                tripFuelLbs = tripFuelKg * KG_TO_LBS;
+                tripFuelOutput.value = tripFuelLbs.toFixed(0);
             } else tripFuelOutput.value = '';
 
             if (fobInput.value !== '') {
-                const landingFuel = fobKg - tripFuelKg - startFuelKg;
-                landingFuelOutput.value = landingFuel.toFixed(0);
-                if (landingFuel < 0) {
+                const landingFuelLbs = fobLbs - tripFuelLbs - startFuelLbs;
+                landingFuelOutput.value = landingFuelLbs.toFixed(0);
+                if (landingFuelLbs < 0) {
                     landingFuelOutput.classList.replace('!text-emerald-400', '!text-red-500');
                     fuelWarning.classList.remove('hidden');
                 } else {
@@ -1353,7 +1358,13 @@
             document.getElementById('sumTowMom').value = towWt > 0 ? towMom.toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
             setLim('ToFuel', tofKg, tofArm); setLim('tow', towWt, towArm, towMac);
 
-            const tripKg = parseFloat(tripFuelOutput.value) || 0, tripArm = tofArm > 0 ? tofArm : 6260;
+            let tripKg = 0;
+            const flightTimeStr = document.getElementById('flightTime').value;
+            if (flightTimeStr) {
+                const [h, m] = flightTimeStr.split(':');
+                tripKg = ((parseInt(h, 10) * 60) + parseInt(m, 10)) * 4.536;
+            }
+            const tripArm = tofArm > 0 ? tofArm : 6260;
             document.getElementById('sumTripFuelWt').value = tripKg > 0 ? tripKg.toLocaleString('en-US', {maximumFractionDigits: 1}) : '';
             document.getElementById('sumTripFuelArm').value = tripKg > 0 ? tripArm.toLocaleString('en-US', {maximumFractionDigits: 2}) : '';
             document.getElementById('sumTripFuelMom').value = tripKg > 0 ? (tripKg*tripArm).toLocaleString('en-US', {maximumFractionDigits: 0}) : '';
@@ -1532,34 +1543,25 @@
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MTOW</td><td style="border:1px solid black;padding:4px;">7700</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('towWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('towStatus')}</td><td style="border:1px solid black;padding:4px;">${v('towMacRes')}</td></tr>
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MLDW</td><td style="border:1px solid black;padding:4px;">7450</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('ldwWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('ldwStatus')}</td><td style="border:1px solid black;padding:4px;">${v('ldwMacRes')}</td></tr>`;
 
-                // Chart for PDF
-                const gN = id => parseFloat((document.getElementById(id).value||'').replace(/,/g,''))||0;
-                const cw=gN('zfwWt'), cm=gN('zfwMacRes'), tw=gN('towWt'), tm=gN('towMacRes'), lw=gN('ldwWt'), lm=gN('ldwMacRes');
-                const mX = (m) => 80+((m-12)/20)*680, mY = (w) => 40+700-((w-4000)/4000)*700;
-                let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%" style="background-color:#ffffe0;">`;
-                for(let i=12;i<=32;i+=0.5) s += `<line x1="${mX(i)}" y1="40" x2="${mX(i)}" y2="740" stroke="#87ceeb" stroke-width="1" />`;
-                for(let i=4000;i<=8000;i+=200) s += `<line x1="80" y1="${mY(i)}" x2="760" y2="${mY(i)}" stroke="#87ceeb" stroke-width="1" />`;
-                s += `<line x1="80" y1="40" x2="80" y2="740" stroke="black" stroke-width="2"/><line x1="80" y1="740" x2="760" y2="740" stroke="black" stroke-width="2"/>`;
-                for(let i=4000;i<=8000;i+=500) s += `<text x="72" y="${mY(i)}" text-anchor="end" alignment-baseline="middle" font-size="14" font-weight="bold">${i}</text><line x1="75" y1="${mY(i)}" x2="80" y2="${mY(i)}" stroke="black" stroke-width="2"/>`;
-                for(let i=12;i<=32;i+=1) s += `<text x="${mX(i)}" y="760" text-anchor="middle" font-size="14" font-weight="bold">${i}</text><line x1="${mX(i)}" y1="740" x2="${mX(i)}" y2="745" stroke="black" stroke-width="2"/>`;
-                s += `<text transform="translate(20,390) rotate(-90)" text-anchor="middle" font-size="18" font-weight="bold">WEIGHT - KG</text><text x="420" y="780" text-anchor="middle" font-size="18" font-weight="bold">CG POSITION - PERCENT MAC</text>`;
-                const e = [{m:15,w:4300},{m:15,w:5013},{m:16,w:7700},{m:30,w:7700},{m:30,w:4300},{m:15,w:4300}];
-                s += `<polyline points="${e.map(p=>`${mX(p.m)},${mY(p.w)}`).join(' ')}" fill="none" stroke="red" stroke-width="4"/><line x1="${mX(15.776)}" y1="${mY(7100)}" x2="${mX(30)}" y2="${mY(7100)}" stroke="red" stroke-width="4"/><line x1="${mX(15.9)}" y1="${mY(7450)}" x2="${mX(30)}" y2="${mY(7450)}" stroke="red" stroke-width="4"/>`;
-                if (cw>0&&tw>0&&lw>0) s += `<polyline points="${mX(tm)},${mY(tw)} ${mX(lm)},${mY(lw)} ${mX(cm)},${mY(cw)}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,8"/>`;
-                const dP = (m,w,S,L) => (m>0&&w>0&&mX(m)>=80&&mX(m)<=760&&mY(w)>=40&&mY(w)<=740)?`${S(mX(m),mY(w))}<rect x="${mX(m)+12}" y="${mY(w)-14}" width="46" height="28" fill="rgba(255,255,255,0.9)" stroke="#666"/><text x="${mX(m)+35}" y="${mY(w)+5}" text-anchor="middle" font-size="14" font-weight="bold" fill="black">${L}</text>`:'';
-                s += dP(cm,cw,(x,y)=>`<circle cx="${x}" cy="${y}" r="8" fill="#06b6d4" stroke="black" stroke-width="2"/>`,'ZFW') + dP(tm,tw,(x,y)=>`<rect x="${x-7}" y="${y-7}" width="14" height="14" fill="#f59e0b" stroke="black" stroke-width="2"/>`,'TOW') + dP(lm,lw,(x,y)=>`<polygon points="${x},${y-9} ${x+9},${y} ${x},${y+9} ${x-9},${y}" fill="#10b981" stroke="black" stroke-width="2"/>`,'LDW') + `</svg>`;
-                document.getElementById('pdf-cgChart-container').innerHTML = s;
+                // Chart for PDF (Menggunakan hasil Canvas yang sudah jadi sebagai Gambar agar 100% dirender)
+                const sourceCanvas = document.getElementById('cgChart');
+                if (sourceCanvas) {
+                    const chartDataUrl = sourceCanvas.toDataURL('image/png', 1.0);
+                    document.getElementById('pdf-cgChart-container').innerHTML = `<img src="${chartDataUrl}" style="width: 100%; height: 100%; object-fit: contain; display: block; margin: 0 auto;" />`;
+                }
 
                 const ep = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-                const lImg = document.getElementById('pdf-out-logo'); if (!lImg.src || lImg.src.includes('R0lGOD')) { lImg.src = await fetchImageAsBase64("https://lh3.googleusercontent.com/d/14uEB7G7WO_5WPlmW3R1XuzktRpOGS3-Z") || ep; lImg.style.display = lImg.src !== ep ? 'block':'none'; }
+                const lImg = document.getElementById('pdf-out-logo'); 
+                if (!lImg.src || lImg.src.includes('R0lGOD')) { 
+                    lImg.src = await fetchImageAsBase64("https://lh3.googleusercontent.com/d/1WNcGjsZ9_Fp54xzOl01EYRqM6-wY5Zh7") || ep; 
+                    lImg.style.display = lImg.src !== ep ? 'block':'none'; 
+                }
                 document.getElementById('pdf-out-pic-name').innerText = pN||'______________________'; document.getElementById('pdf-out-sic-name').innerText = sN||'______________________';
                 
-                const currentPilots = JSON.parse(localStorage.getItem('casa_pilots')) || [];
-
                 const pSign = document.getElementById('pdf-out-pic-sign');
-                if (pN) { const b = await fetchImageAsBase64(currentPilots.find(x=>x.name===pN)?.sign); pSign.src=b||ep; pSign.style.display=b?'block':'none'; } else { pSign.src=ep; pSign.style.display='none'; }
+                if (pN) { const b = await fetchImageAsBase64(globalPilots.find(x=>x.name===pN)?.sign); pSign.src=b||ep; pSign.style.display=b?'block':'none'; } else { pSign.src=ep; pSign.style.display='none'; }
                 const sSign = document.getElementById('pdf-out-sic-sign');
-                if (sN) { const b = await fetchImageAsBase64(currentPilots.find(x=>x.name===sN)?.sign); sSign.src=b||ep; sSign.style.display=b?'block':'none'; } else { sSign.src=ep; sSign.style.display='none'; }
+                if (sN) { const b = await fetchImageAsBase64(globalPilots.find(x=>x.name===sN)?.sign); sSign.src=b||ep; sSign.style.display=b?'block':'none'; } else { sSign.src=ep; sSign.style.display='none'; }
 
                 const opt = { margin: [5,5,5,5], filename: `Loadsheet_${v('noreg')}_${v('flightDate')}.pdf`, image: {type:'jpeg',quality:1}, html2canvas: {scale:2,useCORS:true}, jsPDF: {unit:'mm',format:'a4',orientation:'portrait'} };
                 await html2pdf().set(opt).from(document.getElementById('pdf-report')).save().catch(e=> { throw new Error(e.message); });
