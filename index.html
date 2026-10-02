@@ -269,6 +269,26 @@
 </head>
 <body class="antialiased min-h-screen p-2 sm:p-6 lg:max-w-4xl lg:mx-auto">
 
+    <!-- TOP NAVIGATION BAR (FIREBASE INTEGRATION) -->
+    <div class="flex justify-between items-center mb-4 print-hide">
+        <div class="flex gap-2 sm:gap-3">
+            <button type="button" id="btnNewData" class="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-1.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm shadow-lg flex items-center gap-1.5 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>New Data</span>
+            </button>
+            <button type="button" id="btnHistory" class="bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-1.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm shadow-lg flex items-center gap-1.5 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>History</span>
+            </button>
+        </div>
+        <div class="flex gap-2 sm:gap-3">
+            <button type="button" id="btnSync" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-1.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm shadow-lg flex items-center gap-1.5 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>Sync (Save)</span>
+            </button>
+        </div>
+    </div>
+
     <form id="wbForm">
         
         <!-- HEADER / TITLE -->
@@ -963,9 +983,8 @@
             <!-- Bagian Chart -->
             <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
                 <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
-                <div style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff;">
-                    <!-- Canvas khusus cetak PDF diganti dengan IMG agar terbaca html2pdf -->
-                    <img id="pdf-cgChart-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" style="width: 100%; max-width: 500px; height: auto; aspect-ratio: 1/1; display: block; margin: 0 auto; object-fit: contain; background-color: #ffffe0;" />
+                <div id="pdf-cgChart-container" style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff; width: 100%; max-width: 500px; aspect-ratio: 1/1;">
+                    <!-- Grafik SVG Vektor Murni akan disuntikkan secara dinamis ke sini -->
                 </div>
                 <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
                     <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
@@ -1489,23 +1508,72 @@
                     <tr><td style="border: 1px solid black; padding: 4px; font-weight:bold;">MLDW</td><td style="border: 1px solid black; padding: 4px;">7450</td><td style="border: 1px solid black; padding: 4px; font-weight:bold;">${val('ldwWt')}</td><td style="border: 1px solid black; padding: 4px;">${getStatus('ldwStatus')}</td><td style="border: 1px solid black; padding: 4px;">${val('ldwMacRes')}</td></tr>
                 `;
 
-                // 6. Menyalin Chart ke Template PDF (Ubah menjadi Image Base64 agar 100% terbaca di PDF)
-                const sourceChart = document.getElementById('cgChart');
-                const pdfChartImg = document.getElementById('pdf-cgChart-img');
+                // 6. Membuat Chart Berbasis SVG Vektor Murni (Bukan Capture Image)
+                // Metode ini menjamin 100% chart akan tergambar karena ia bersifat DOM Data layaknya tabel.
+                const getNum = (id) => parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+                const zfwWt = getNum('zfwWt'), zfwMac = getNum('zfwMacRes');
+                const towWt = getNum('towWt'), towMac = getNum('towMacRes');
+                const ldwWt = getNum('ldwWt'), ldwMac = getNum('ldwMacRes');
+
+                const padLeft = 80, padRight = 40, padTop = 40, padBottom = 60;
+                const plotW = 800 - padLeft - padRight;
+                const plotH = 800 - padTop - padBottom;
+                const mapX = (mac) => padLeft + ((mac - 12) / (32 - 12)) * plotW;
+                const mapY = (wt) => padTop + plotH - ((wt - 4000) / (8000 - 4000)) * plotH;
+
+                let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%" style="background-color: #ffffe0;">`;
                 
-                try {
-                    // Gunakan format JPEG (Quality 0.8) agar background dipaksa solid dan ukurannya jauh lebih ringan untuk dicekam html2canvas
-                    const chartDataUrl = sourceChart.toDataURL('image/jpeg', 0.8);
-                    if (chartDataUrl && chartDataUrl.length > 50) {
-                        pdfChartImg.src = chartDataUrl;
-                    }
-                } catch (e) {
-                    console.error("Gagal menyalin grafik:", e);
+                // Grid Horizontal & Vertical
+                for(let i=12; i<=32; i+=0.5) svg += `<line x1="${mapX(i)}" y1="${padTop}" x2="${mapX(i)}" y2="${padTop+plotH}" stroke="#87ceeb" stroke-width="1" />`;
+                for(let i=4000; i<=8000; i+=200) svg += `<line x1="${padLeft}" y1="${mapY(i)}" x2="${padLeft+plotW}" y2="${mapY(i)}" stroke="#87ceeb" stroke-width="1" />`;
+
+                // Axes & Labels
+                svg += `<line x1="${padLeft}" y1="${padTop}" x2="${padLeft}" y2="${padTop+plotH}" stroke="black" stroke-width="2" />`;
+                svg += `<line x1="${padLeft}" y1="${padTop+plotH}" x2="${padLeft+plotW}" y2="${padTop+plotH}" stroke="black" stroke-width="2" />`;
+                
+                for(let i=4000; i<=8000; i+=500) {
+                    svg += `<text x="${padLeft-8}" y="${mapY(i)}" text-anchor="end" alignment-baseline="middle" font-size="14" font-family="Arial" font-weight="bold">${i}</text>`;
+                    svg += `<line x1="${padLeft-5}" y1="${mapY(i)}" x2="${padLeft}" y2="${mapY(i)}" stroke="black" stroke-width="2" />`;
+                }
+                for(let i=12; i<=32; i+=1) {
+                    svg += `<text x="${mapX(i)}" y="${padTop+plotH+20}" text-anchor="middle" font-size="14" font-family="Arial" font-weight="bold">${i}</text>`;
+                    svg += `<line x1="${mapX(i)}" y1="${padTop+plotH}" x2="${mapX(i)}" y2="${padTop+plotH+5}" stroke="black" stroke-width="2" />`;
                 }
                 
-                // Jeda 300ms yang SANGAT PENTING: memberi waktu browser menggambar ulang (repaint) 
-                // data Base64 gambar tersebut secara visual ke elemen DOM HTML sebelum mesin html2pdf mengambil foto cetakannya.
-                await new Promise(resolve => setTimeout(resolve, 300));
+                svg += `<text transform="translate(20, ${padTop+plotH/2}) rotate(-90)" text-anchor="middle" font-size="18" font-family="Arial" font-weight="bold">WEIGHT - KG</text>`;
+                svg += `<text x="${padLeft+plotW/2}" y="780" text-anchor="middle" font-size="18" font-family="Arial" font-weight="bold">CG POSITION - PERCENT MAC</text>`;
+
+                // Envelope Line & Crosses
+                const env = [{m:15, w:4300}, {m:15, w:5013}, {m:16, w:7700}, {m:30, w:7700}, {m:30, w:4300}, {m:15, w:4300}];
+                svg += `<polyline points="${env.map(p => `${mapX(p.m)},${mapY(p.w)}`).join(' ')}" fill="none" stroke="red" stroke-width="4" />`;
+                
+                // Limit Lines (MZFW & MLDW)
+                svg += `<line x1="${mapX(15.776)}" y1="${mapY(7100)}" x2="${mapX(30)}" y2="${mapY(7100)}" stroke="red" stroke-width="4" />`;
+                svg += `<line x1="${mapX(15.90)}" y1="${mapY(7450)}" x2="${mapX(30)}" y2="${mapY(7450)}" stroke="red" stroke-width="4" />`;
+                
+                const drawCross = (m, w) => `<line x1="${mapX(m)-5}" y1="${mapY(w)-5}" x2="${mapX(m)+5}" y2="${mapY(w)+5}" stroke="#1e3a8a" stroke-width="2" /><line x1="${mapX(m)-5}" y1="${mapY(w)+5}" x2="${mapX(m)+5}" y2="${mapY(w)-5}" stroke="#1e3a8a" stroke-width="2" />`;
+                env.forEach(p => svg += drawCross(p.m, p.w));
+                svg += drawCross(15.776, 7100) + drawCross(30, 7100) + drawCross(15.90, 7450) + drawCross(30, 7450);
+
+                // Connector lines
+                if (zfwWt > 0 && towWt > 0 && ldwWt > 0) {
+                    svg += `<polyline points="${mapX(towMac)},${mapY(towWt)} ${mapX(ldwMac)},${mapY(ldwWt)} ${mapX(zfwMac)},${mapY(zfwWt)}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,8" />`;
+                }
+
+                // Plot Dots
+                const plotPoint = (mac, wt, shapeStr, label) => {
+                    if (mac <= 0 || wt <= 0) return '';
+                    const px = mapX(mac), py = mapY(wt);
+                    if(px < padLeft || px > padLeft+plotW || py < padTop || py > padTop+plotH) return '';
+                    return shapeStr(px, py) + `<rect x="${px+12}" y="${py-14}" width="46" height="28" fill="rgba(255,255,255,0.9)" stroke="#666" stroke-width="1" /><text x="${px+35}" y="${py+5}" text-anchor="middle" font-size="14" font-family="Arial" font-weight="bold" fill="black">${label}</text>`;
+                };
+
+                if (zfwWt > 0 && zfwMac > 0) svg += plotPoint(zfwMac, zfwWt, (x,y) => `<circle cx="${x}" cy="${y}" r="8" fill="#06b6d4" stroke="black" stroke-width="2" />`, 'ZFW');
+                if (towWt > 0 && towMac > 0) svg += plotPoint(towMac, towWt, (x,y) => `<rect x="${x-7}" y="${y-7}" width="14" height="14" fill="#f59e0b" stroke="black" stroke-width="2" />`, 'TOW');
+                if (ldwWt > 0 && ldwMac > 0) svg += plotPoint(ldwMac, ldwWt, (x,y) => `<polygon points="${x},${y-9} ${x+9},${y} ${x},${y+9} ${x-9},${y}" fill="#10b981" stroke="black" stroke-width="2" />`, 'LDW');
+
+                svg += `</svg>`;
+                document.getElementById('pdf-cgChart-container').innerHTML = svg;
 
                 // --- 7. MENGISI TANDA TANGAN & LOGO (AUTO SIGNATURE DENGAN FETCH BASE64) ---
                 const signatures = {
@@ -1828,6 +1896,339 @@
                 ctx.setLineDash([]); // Kembalikan ke garis solid
             }
         }
+    </script>
+
+    <!-- UI MODAL & TOAST (FIREBASE SYSTEM) -->
+    <div id="toastMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none flex items-center gap-3">
+        <span id="toastIcon">✅</span>
+        <span id="toastText" class="font-semibold text-sm">Message</span>
+    </div>
+
+    <div id="historyModal" class="fixed inset-0 bg-black/60 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm print-hide">
+        <div class="bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl transform scale-95 transition-transform duration-300" id="historyModalContent">
+            <div class="p-4 border-b border-[#334155] flex justify-between items-center bg-slate-800/50 rounded-t-2xl">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Saved Loadsheets (Cloud History)
+                </h2>
+                <button type="button" id="closeHistory" class="text-gray-400 hover:text-white bg-slate-700/50 hover:bg-slate-600 p-1.5 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 custom-scrollbar" id="historyList">
+                <!-- Konten List dimuat disini via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE CLOUD DATABASE INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Database Firebase User
+        const firebaseConfig = {
+            apiKey: "AIzaSyBK8_JZ1d0SORUSuHKtatoiQ5F_Z-7r8T0",
+            authDomain: "gen-lang-client-0159557626.firebaseapp.com",
+            projectId: "gen-lang-client-0159557626",
+            storageBucket: "gen-lang-client-0159557626.firebasestorage.app",
+            messagingSenderId: "944205168021",
+            appId: "1:944205168021:web:10e64d50da8d6aec79ca9c",
+            measurementId: "G-X7PQBLFJC5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Env vars untuk Keamanan Multi-user
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'casa-212-app';
+        let userId = null;
+        let isSaving = false;
+
+        // Custom Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastMessage');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastText');
+            
+            text.innerText = message;
+            if (type === 'success') {
+                icon.innerText = '✅';
+                toast.className = "fixed top-4 left-1/2 transform -translate-x-1/2 bg-emerald-900 border border-emerald-500 text-emerald-100 px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 flex items-center gap-3";
+            } else if (type === 'error') {
+                icon.innerText = '⚠️';
+                toast.className = "fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-900 border border-red-500 text-red-100 px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 flex items-center gap-3";
+            } else {
+                icon.innerText = '☁️';
+                toast.className = "fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-900 border border-blue-500 text-blue-100 px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 flex items-center gap-3";
+            }
+            
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -1rem)';
+            }, 3000);
+        }
+
+        // 1. Inisialisasi Otentikasi
+        async function initAuth() {
+            try {
+                // Menggunakan otentikasi anonim murni karena Anda memakai custom Firebase Project
+                await signInAnonymously(auth);
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                showToast("Connected to Cloud Database", 'info');
+            } catch (error) {
+                console.error("Auth Error:", error);
+                showToast("Database connection failed", 'error');
+            }
+        }
+        initAuth(); // Jalankan Otomatis Saat Web Dimuat
+
+        // 2. Fungsi Pembungkus Form (Serialization) -> Memasukkan UI web jadi format Database
+        function serializeFormData() {
+            const data = {
+                timestamp: Date.now(), // Waktu penyimpanan
+                flightDate: document.getElementById('flightDate').value,
+                noreg: document.getElementById('noreg').value,
+                acType: document.getElementById('acType').value,
+                customer: document.getElementById('customer').value,
+                depFrom: document.getElementById('depFrom').value,
+                arrDest: document.getElementById('arrDest').value,
+                flightTime: document.getElementById('flightTime').value,
+                fob: document.getElementById('fob').value,
+                startFuel: document.getElementById('startFuel').value,
+                emptyWeight: document.getElementById('emptyWeight').value,
+                emptyArm: document.getElementById('emptyArm').value,
+                toolsWt: document.getElementById('toolsWt').value,
+                crew: [],
+                pax: []
+            };
+
+            // Loop untuk Kru
+            document.querySelectorAll('.crew-row').forEach(row => {
+                const select = row.querySelector('select');
+                const weight = row.querySelector('.crew-weight');
+                data.crew.push({
+                    name: select ? select.value : '',
+                    weight: weight ? weight.value : ''
+                });
+            });
+
+            // Loop untuk Penumpang
+            document.querySelectorAll('.pax-row').forEach(row => {
+                const inputs = row.querySelectorAll('.table-input');
+                data.pax.push({
+                    p1: inputs[0] ? inputs[0].value : '',
+                    p2: (inputs[1] && !inputs[1].disabled) ? inputs[1].value : '',
+                    bag: inputs[2] ? inputs[2].value : ''
+                });
+            });
+
+            return data;
+        }
+
+        // 3. Fungsi Bongkar Data Form (Deserialization) -> Memasukkan format DB kembali ke UI web
+        function deserializeFormData(data) {
+            if(!data) return;
+            const setVal = (id, val) => { if(document.getElementById(id) && val !== undefined) document.getElementById(id).value = val; };
+            
+            // Setel Ulang Base Values
+            setVal('flightDate', data.flightDate);
+            setVal('noreg', data.noreg);
+            setVal('acType', data.acType);
+            setVal('customer', data.customer);
+            setVal('depFrom', data.depFrom);
+            setVal('arrDest', data.arrDest);
+            setVal('flightTime', data.flightTime);
+            setVal('fob', data.fob);
+            setVal('startFuel', data.startFuel || "45");
+            setVal('emptyWeight', data.emptyWeight || "4853.80");
+            setVal('emptyArm', data.emptyArm || "6,070");
+            setVal('toolsWt', data.toolsWt || "50");
+
+            // Setel Ulang Kru
+            if (data.crew && Array.isArray(data.crew)) {
+                document.querySelectorAll('.crew-row').forEach((row, i) => {
+                    if(data.crew[i]) {
+                        const select = row.querySelector('select');
+                        const weight = row.querySelector('.crew-weight');
+                        if(select) select.value = data.crew[i].name;
+                        if(weight) weight.value = data.crew[i].weight;
+                    }
+                });
+            }
+
+            // Setel Ulang Penumpang
+            if (data.pax && Array.isArray(data.pax)) {
+                document.querySelectorAll('.pax-row').forEach((row, i) => {
+                    if(data.pax[i]) {
+                        const inputs = row.querySelectorAll('.table-input');
+                        if(inputs[0]) inputs[0].value = data.pax[i].p1;
+                        if(inputs[1] && !inputs[1].disabled) inputs[1].value = data.pax[i].p2;
+                        if(inputs[2]) inputs[2].value = data.pax[i].bag;
+                    }
+                });
+            }
+
+            // Memicu trigger Event 'input' & 'change' secara manual ke semua elemen agar hitungan kalkulasi javascript bawaan web otomatis berjalan
+            const triggers = ['flightTime', 'fob', 'startFuel', 'emptyWeight', 'emptyArm', 'toolsWt', 'noreg'];
+            triggers.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.dispatchEvent(new Event('change', {bubbles: true}));
+                    el.dispatchEvent(new Event('input', {bubbles: true}));
+                    el.dispatchEvent(new Event('blur', {bubbles: true}));
+                }
+            });
+            document.querySelectorAll('.crew-weight, .table-input').forEach(el => {
+                el.dispatchEvent(new Event('input', {bubbles: true}));
+            });
+            
+            showToast("Loadsheet loaded successfully!", 'success');
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        // --- TOMBOL AKSI LOGIC --- //
+
+        // Tombol + NEW DATA
+        document.getElementById('btnNewData').addEventListener('click', () => {
+            document.getElementById('wbForm').reset();
+            
+            // Setel Data Bawaan Pabrik kembali
+            document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('emptyWeight').value = "4853.80";
+            document.getElementById('emptyArm').value = "6,070";
+            document.getElementById('toolsWt').value = "50";
+            document.getElementById('startFuel').value = "45";
+            
+            // Picu kembali kalkulasi default
+            ['noreg', 'flightTime', 'fob', 'emptyWeight', 'emptyArm', 'toolsWt'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.dispatchEvent(new Event('input', {bubbles: true}));
+            });
+            document.querySelectorAll('.crew-weight, .table-input').forEach(el => el.dispatchEvent(new Event('input', {bubbles: true})));
+            
+            showToast("Form cleared for New Data", 'info');
+        });
+
+        // Tombol SYNC (Save)
+        document.getElementById('btnSync').addEventListener('click', async () => {
+            if (!userId) {
+                showToast("Not authenticated with Cloud", 'error');
+                return;
+            }
+            if (isSaving) return;
+            
+            const btn = document.getElementById('btnSync');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Saving...</span>';
+            isSaving = true;
+
+            try {
+                const docData = serializeFormData();
+                // Patuh ke Aturan Mandatori 1 & 3: Menggunakan struktur private data pengguna dan guard otentikasi
+                const colRef = collection(db, 'artifacts', appId, 'users', userId, 'loadsheets');
+                await addDoc(colRef, docData);
+                showToast("Data synced to Cloud successfully!");
+            } catch (err) {
+                console.error("Firebase Save Error:", err);
+                showToast("Failed to sync data", 'error');
+            } finally {
+                btn.innerHTML = originalHtml;
+                isSaving = false;
+            }
+        });
+
+        // Tombol HISTORY
+        const historyModal = document.getElementById('historyModal');
+        const historyModalContent = document.getElementById('historyModalContent');
+        
+        document.getElementById('btnHistory').addEventListener('click', async () => {
+            historyModal.classList.remove('hidden');
+            setTimeout(() => {
+                historyModalContent.classList.remove('scale-95');
+                historyModalContent.classList.add('scale-100');
+            }, 10);
+            
+            const listDiv = document.getElementById('historyList');
+            listDiv.innerHTML = '<div class="text-center text-cyan-400 py-12 flex flex-col items-center"><svg class="w-10 h-10 mb-3 animate-spin text-cyan-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span class="font-bold">Fetching from Database...</span></div>';
+
+            if (!userId) {
+                listDiv.innerHTML = '<div class="text-center text-red-400 py-8 font-bold">Cloud authentication required.</div>';
+                return;
+            }
+
+            try {
+                // Patuh Aturan Mandatori 2: Fetching simple tanpa query aneh, lalu disortir secara manual lewat JS di memori
+                const colRef = collection(db, 'artifacts', appId, 'users', userId, 'loadsheets');
+                const snapshot = await getDocs(colRef);
+                
+                const loadsheets = [];
+                snapshot.forEach(doc => loadsheets.push({ id: doc.id, ...doc.data() }));
+
+                // Memori Filter (Urutkan yang Paling Baru Disimpan)
+                loadsheets.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (loadsheets.length === 0) {
+                    listDiv.innerHTML = '<div class="text-center text-gray-500 py-12 font-bold text-lg"><p>No saved loadsheets found.</p><p class="text-sm mt-2 text-gray-600">Click "Sync (Save)" to backup your work.</p></div>';
+                    return;
+                }
+
+                let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
+                loadsheets.forEach((sheet, idx) => {
+                    const dateObj = new Date(sheet.timestamp || Date.now());
+                    const fDate = dateObj.toLocaleDateString('id-ID', {day: 'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+                    const route = (sheet.depFrom || '???') + ' ➔ ' + (sheet.arrDest || '???');
+                    const noReg = sheet.noreg || 'No Reg';
+                    const customer = sheet.customer || 'No Customer';
+                    
+                    html += `
+                        <div class="bg-slate-800/80 hover:bg-slate-700/80 border border-[#334155] hover:border-cyan-500 rounded-xl p-4 cursor-pointer transition-all shadow-sm group flex flex-col justify-between" data-idx="${idx}">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-bold text-cyan-400 text-lg">${noReg}</span>
+                                    <span class="text-[10px] text-gray-400 bg-slate-900 px-2 py-1 rounded border border-slate-700">${fDate}</span>
+                                </div>
+                                <div class="text-xs text-gray-400 font-bold mb-1 uppercase">${customer}</div>
+                                <div class="text-sm text-gray-200 font-mono flex items-center gap-2 bg-[#0f1522] p-2 rounded">
+                                    <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span class="font-bold tracking-widest">${route}</span>
+                                </div>
+                            </div>
+                            <button type="button" class="mt-4 w-full bg-indigo-600/20 text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white border border-indigo-500/30 group-hover:border-indigo-500 rounded-lg py-2 text-xs font-bold transition-all flex justify-center items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                LOAD THIS RECORD
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                listDiv.innerHTML = html;
+
+                // Event listener khusus setiap kartu di History List
+                listDiv.querySelectorAll('.group').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const idx = this.getAttribute('data-idx');
+                        deserializeFormData(loadsheets[idx]);
+                    });
+                });
+
+            } catch (err) {
+                console.error("Firebase Load Error:", err);
+                listDiv.innerHTML = '<div class="text-center text-red-400 py-8 font-bold">Failed to fetch data from cloud. (Check connection or config)</div>';
+            }
+        });
+
+        // Menutup jendela Modal History
+        document.getElementById('closeHistory').addEventListener('click', () => {
+            historyModalContent.classList.remove('scale-100');
+            historyModalContent.classList.add('scale-95');
+            setTimeout(() => historyModal.classList.add('hidden'), 200);
+        });
     </script>
 </body>
 </html>
