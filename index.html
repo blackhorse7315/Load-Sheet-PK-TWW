@@ -663,14 +663,15 @@
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid black; font-size: 11px; text-align: center;">
                         <thead><tr style="background: #e5e5e5;"><th style="border: 1px solid black; padding: 4px;">LIMIT</th><th style="border: 1px solid black; padding: 4px;">MAX (KG)</th><th style="border: 1px solid black; padding: 4px;">ACTUAL (KG)</th><th style="border: 1px solid black; padding: 4px;">STATUS</th><th style="border: 1px solid black; padding: 4px;">% MAC</th></tr></thead>
                         <tbody id="pdf-out-limitation-tbody"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
-                    <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
-                    <div id="pdf-cgChart-container" style="display: inline-block; border: 2px solid black; padding: 5px; background: #fff; width: 100%; max-width: 500px; aspect-ratio: 1/1;"></div>
-                    <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
-                        <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
-                        <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border:1px solid #000; margin-right:5px;"></span>TOW</span>
+            </table>
+        </div>
+        <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
+            <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
+            <!-- MENGUBAH STYLE CONTAINER: Menghilangkan aspect-ratio dan inline-block, menggunakan ukuran tetap absolut agar html2canvas tidak error -->
+            <div id="pdf-cgChart-container" style="display: block; border: 2px solid black; background: #fff; width: 400px; height: 400px; margin: 0 auto; overflow: hidden;"></div>
+            <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
+                <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
+                <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border:1px solid #000; margin-right:5px;"></span>TOW</span>
                         <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border:1px solid #000; margin-right:5px; transform: rotate(45deg);"></span>LDW</span>
                     </div>
                 </div>
@@ -1528,12 +1529,86 @@
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MTOW</td><td style="border:1px solid black;padding:4px;">7700</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('towWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('towStatus')}</td><td style="border:1px solid black;padding:4px;">${v('towMacRes')}</td></tr>
                 <tr><td style="border:1px solid black;padding:4px;font-weight:bold;">MLDW</td><td style="border:1px solid black;padding:4px;">7450</td><td style="border:1px solid black;padding:4px;font-weight:bold;">${v('ldwWt')}</td><td style="border:1px solid black;padding:4px;">${getSt('ldwStatus')}</td><td style="border:1px solid black;padding:4px;">${v('ldwMacRes')}</td></tr>`;
 
-                // Grab the live canvas chart as image
-                const sourceCanvas = document.getElementById('cgChart');
-                if (sourceCanvas) {
-                    const chartDataUrl = sourceCanvas.toDataURL('image/png', 1.0);
-                    document.getElementById('pdf-cgChart-container').innerHTML = `<img src="${chartDataUrl}" style="width: 100%; height: 100%; object-fit: contain; display: block; margin: 0 auto;" />`;
-                }
+                // --- GENERATE OFFSCREEN CHART ---
+                // Kita buat ulang gambarnya secara tersembunyi di memori beresolusi mutlak (tanpa ikut campur UI ponsel)
+                const generateOffscreenChart = () => {
+                    const getNum = id => parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+                    const zfwWt = getNum('zfwWt'), zfwMac = getNum('zfwMacRes');
+                    const towWt = getNum('towWt'), towMac = getNum('towMacRes');
+                    const ldwWt = getNum('ldwWt'), ldwMac = getNum('ldwMacRes');
+
+                    const canvas = document.createElement('canvas');
+                    const w = 800, h = 800; // Resolusi Tinggi
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.fillStyle = '#ffffe0'; ctx.fillRect(0, 0, w, h); // Latar
+
+                    const minMac=12, maxMac=32, minWt=4000, maxWt=8000;
+                    const padL=100, padB=80, padR=40, padT=40;
+                    const pW=w-padL-padR, pH=h-padT-padB;
+                    const mX = m => padL+((m-minMac)/(maxMac-minMac))*pW;
+                    const mY = wt => padT+pH-((wt-minWt)/(maxWt-minWt))*pH;
+
+                    // Garis-garis Grid
+                    ctx.strokeStyle = '#87ceeb'; ctx.lineWidth = 2;
+                    for (let i = minMac; i <= maxMac; i+=0.5) { ctx.beginPath(); ctx.moveTo(mX(i), padT); ctx.lineTo(mX(i), padT+pH); ctx.stroke(); }
+                    for (let i = minWt; i <= maxWt; i+=200) { ctx.beginPath(); ctx.moveTo(padL, mY(i)); ctx.lineTo(padL+pW, mY(i)); ctx.stroke(); }
+
+                    // Label dan Sumbu X/Y
+                    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.fillStyle = '#000'; ctx.font = '16px Arial';
+                    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+pH); ctx.stroke();
+                    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+                    for (let i=minWt; i<=maxWt; i+=500) { const y=mY(i); ctx.fillText(i, padL-10, y); ctx.beginPath(); ctx.moveTo(padL-8, y); ctx.lineTo(padL, y); ctx.stroke(); }
+                    
+                    ctx.beginPath(); ctx.moveTo(padL, padT+pH); ctx.lineTo(padL+pW, padT+pH); ctx.stroke();
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+                    for (let i=minMac; i<=maxMac; i++) { const x=mX(i); ctx.fillText(i, x, padT+pH+12); ctx.beginPath(); ctx.moveTo(x, padT+pH); ctx.lineTo(x, padT+pH+8); ctx.stroke(); }
+                    
+                    ctx.save(); ctx.translate(30, padT+pH/2); ctx.rotate(-Math.PI/2); ctx.font='bold 18px Arial'; ctx.fillText('WEIGHT - KG',0,0); ctx.restore();
+                    ctx.font='bold 18px Arial'; ctx.fillText('CG POSITION - PERCENT MAC', padL+pW/2, h-25);
+
+                    // Batas Amplop (Envelope Limit)
+                    const env = [{m:15,w:4300},{m:15,w:5013},{m:16,w:7700},{m:30,w:7700},{m:30,w:4300},{m:15,w:4300}];
+                    ctx.strokeStyle='red'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(mX(env[0].m), mY(env[0].w));
+                    for(let i=1;i<env.length;i++) ctx.lineTo(mX(env[i].m), mY(env[i].w)); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(mX(15.8),mY(7100)); ctx.lineTo(mX(30),mY(7100)); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(mX(16.0),mY(7450)); ctx.lineTo(mX(30),mY(7450)); ctx.stroke();
+
+                    // Menggambar Titik
+                    const pP = (m, wt, c, sh, lb) => {
+                        if(m<=0||wt<=0) return; const px=mX(m), py=mY(wt); if(px<padL||px>padL+pW||py<padT||py>padT+pH) return;
+                        ctx.fillStyle=c; ctx.strokeStyle='#000'; ctx.lineWidth=2; ctx.beginPath();
+                        if(sh==='c') ctx.arc(px,py,10,0,2*Math.PI); 
+                        else if(sh==='s') ctx.rect(px-8,py-8,16,16); 
+                        else { ctx.moveTo(px,py-10); ctx.lineTo(px+10,py); ctx.lineTo(px,py+10); ctx.lineTo(px-10,py); ctx.closePath(); }
+                        ctx.fill(); ctx.stroke();
+                        ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.fillRect(px+15,py-15,50,28); ctx.strokeStyle='#ccc'; ctx.strokeRect(px+15,py-15,50,28);
+                        ctx.fillStyle='#000'; ctx.font='bold 14px Arial'; ctx.fillText(lb, px+40, py);
+                    };
+                    
+                    if(zfwWt>0&&zfwMac>0) pP(zfwMac,zfwWt,'#06b6d4','c','ZFW');
+                    if(towWt>0&&towMac>0) pP(towMac,towWt,'#f59e0b','s','TOW');
+                    if(ldwWt>0&&ldwMac>0) pP(ldwMac,ldwWt,'#10b981','d','LDW');
+                    
+                    // Garis Penghubung Poin ZFW -> LDW -> TOW
+                    if(zfwWt>0&&towWt>0&&ldwWt>0){ ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.moveTo(mX(towMac),mY(towWt)); ctx.lineTo(mX(ldwMac),mY(ldwWt)); ctx.lineTo(mX(zfwMac),mY(zfwWt)); ctx.stroke(); ctx.setLineDash([]); }
+                    
+                    return canvas.toDataURL('image/jpeg', 1.0);
+                };
+
+                // Inject Gambar Chart sebagai Tag IMG (menunggu load selesai agar html2canvas sukses merender)
+                await new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = resolve;
+                    img.src = generateOffscreenChart();
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.display = "block";
+                    const container = document.getElementById('pdf-cgChart-container');
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                });
 
                 const ep = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
                 const lImg = document.getElementById('pdf-out-logo');
