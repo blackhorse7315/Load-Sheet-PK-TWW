@@ -666,30 +666,43 @@
                         <tbody id="pdf-out-limitation-tbody"></tbody>
             </table>
         </div>
-        <div style="margin-top: 20px; text-align: center; page-break-inside: avoid;">
-            <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">CENTER OF GRAVITY ENVELOPE</h3>
-            <!-- MENGUBAH STYLE CONTAINER: Menghilangkan aspect-ratio dan inline-block, menggunakan ukuran tetap absolut agar html2canvas tidak error -->
-            <div id="pdf-cgChart-container" style="display: block; border: 2px solid black; background: #fff; width: 400px; height: 400px; margin: 0 auto; overflow: hidden;"></div>
-            <div style="margin-top: 10px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
-                <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
-                <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border:1px solid #000; margin-right:5px;"></span>TOW</span>
-                        <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border:1px solid #000; margin-right:5px; transform: rotate(45deg);"></span>LDW</span>
-                    </div>
+        
+        <!-- BUNGKUS CHART DAN SIGNATURE AGAR TIDAK TERPISAH HALAMAN -->
+        <div style="page-break-inside: avoid;">
+            <div style="margin-top: 10px; text-align: center;">
+                <h3 style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">CENTER OF GRAVITY ENVELOPE</h3>
+                <!-- Ukuran diperkecil menjadi 320px agar muat bersama tanda tangan -->
+                <div id="pdf-cgChart-container" style="display: block; border: 2px solid black; background: #fff; width: 320px; height: 320px; margin: 0 auto; overflow: hidden;"></div>
+                <div style="margin-top: 8px; font-size: 10px; font-weight: bold; display: flex; justify-content: center; gap: 20px;">
+                    <span><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#06b6d4; border:1px solid #000; margin-right:5px;"></span>ZFW</span>
+                    <span><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border:1px solid #000; margin-right:5px;"></span>TOW</span>
+                    <span><span style="display:inline-block; width:10px; height:10px; background:#10b981; border:1px solid #000; margin-right:5px; transform: rotate(45deg);"></span>LDW</span>
                 </div>
-                <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center; page-break-inside: avoid;">
-                    <div style="width: 30%;">
-                        <p>Prepared By,</p><div style="height: 70px; display: flex; justify-content: center; align-items: center; margin: 5px 0;"><img id="pdf-out-sic-sign" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" /></div>
-                        <p style="text-decoration: underline; padding-top: 5px; margin-bottom: 2px;" id="pdf-out-sic-name">______________________</p><p style="font-size: 9px; font-weight: normal;">Flight Operations Officer (SIC)</p>
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; text-align: center;">
+                <div style="width: 30%;">
+                    <p>Prepared By,</p>
+                    <div style="height: 50px; display: flex; justify-content: center; align-items: center; margin: 2px 0;">
+                        <img id="pdf-out-sic-sign" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="max-height: 45px; max-width: 120px; display: none; object-fit: contain;" />
                     </div>
-                    <div style="width: 30%;">
-                        <p>Approved By,</p><div style="height: 70px; display: flex; justify-content: center; align-items: center; margin: 5px 0;"><img id="pdf-out-pic-sign" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="max-height: 60px; max-width: 120px; display: none; object-fit: contain;" /></div>
-                        <p style="text-decoration: underline; padding-top: 5px; margin-bottom: 2px;" id="pdf-out-pic-name">______________________</p><p style="font-size: 9px; font-weight: normal;">Pilot in Command (PIC)</p>
+                    <p style="text-decoration: underline; padding-top: 2px; margin-bottom: 2px;" id="pdf-out-sic-name">______________________</p>
+                    <p style="font-size: 9px; font-weight: normal;">Flight Operations Officer (SIC)</p>
+                </div>
+                <div style="width: 30%;">
+                    <p>Approved By,</p>
+                    <div style="height: 50px; display: flex; justify-content: center; align-items: center; margin: 2px 0;">
+                        <img id="pdf-out-pic-sign" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="max-height: 45px; max-width: 120px; display: none; object-fit: contain;" />
                     </div>
+                    <p style="text-decoration: underline; padding-top: 2px; margin-bottom: 2px;" id="pdf-out-pic-name">______________________</p>
+                    <p style="font-size: 9px; font-weight: normal;">Pilot in Command (PIC)</p>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <div id="toastMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none flex items-center gap-3">
+<div id="toastMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none flex items-center gap-3">
             <span id="toastIcon">✅</span><span id="toastText" class="font-semibold text-sm">Message</span>
         </div>
 
