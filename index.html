@@ -1426,6 +1426,9 @@
             showToast("Loadsheet loaded!", 'success');
             document.getElementById('historyModal').classList.add('hidden');
         }
+        
+        // Ekspos ke global window agar bisa dipanggil dari onclick atribut HTML
+        window.deserializeFormData = deserializeFormData;
 
         document.getElementById('btnNewData').addEventListener('click', () => {
             document.getElementById('wbForm').reset();
