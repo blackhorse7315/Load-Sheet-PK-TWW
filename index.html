@@ -941,6 +941,43 @@
             }
         });
 
+        // --- SESSION MANAGEMENT (AUTO-LOGIN) ---
+        const SESSION_KEY = 'casa_app_session';
+
+        // Cek sesi saat aplikasi dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedSession = localStorage.getItem(SESSION_KEY);
+            if (savedSession) {
+                const session = JSON.parse(savedSession);
+                if (session.role === 'admin') {
+                    showAdminPage();
+                } else {
+                    showUserPage(session.name, false); // false = jangan reset form date saat auto-login
+                }
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            
+            if (u === 'admin' && p === 'admin321') {
+                localStorage.setItem(SESSION_KEY, JSON.stringify({ role: 'admin' }));
+                showAdminPage();
+                return;
+            }
+
+            const matchedUser = globalUsers.find(user => user.username === u && user.password === p);
+
+            if (matchedUser) {
+                localStorage.setItem(SESSION_KEY, JSON.stringify({ role: 'user', name: matchedUser.name }));
+                showUserPage(matchedUser.name, true);
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
         function showAdminPage() {
             loginSection.classList.add('hidden');
             userAppSection.classList.add('hidden');
@@ -949,23 +986,36 @@
             renderAdminData();
         }
 
-        function showUserPage(name) {
+        function showUserPage(name, isNewLogin = true) {
             loginSection.classList.add('hidden');
             adminSection.classList.add('hidden');
             userAppSection.classList.remove('hidden');
             loginError.classList.add('hidden');
             displayActiveUser.innerText = name;
             
-            document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
+            if (isNewLogin) {
+                document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
+            }
         }
 
         function logout() {
+            localStorage.removeItem(SESSION_KEY);
             document.getElementById('loginUsername').value = '';
             document.getElementById('loginPassword').value = '';
             adminSection.classList.add('hidden');
             userAppSection.classList.add('hidden');
             loginSection.classList.remove('hidden');
         }
+
+        // --- WARNING SAAT MENUTUP APLIKASI (CEGAH TUTUP TIDAK SENGAJA) ---
+        window.addEventListener('beforeunload', function (e) {
+            // Hanya munculkan peringatan jika pengguna berada di dalam aplikasi (bukan di layar login)
+            if (!userAppSection.classList.contains('hidden') || !adminSection.classList.contains('hidden')) {
+                const msg = "Anda memiliki data yang mungkin belum tersimpan. Yakin ingin keluar?";
+                e.returnValue = msg; 
+                return msg;
+            }
+        });
 
         // -------------------------------------------------------------
         // ADMIN PANEL LOGIC (CRUD VIA FIREBASE)
@@ -1479,15 +1529,24 @@
             showToast("Form cleared for New Data", 'info');
         });
 
-        document.getElementById('btnSync').addEventListener('click', async () => {
+        document.getElementById('btnSync').addEventListener('click', async function() {
             if (!firebaseUserId) { showToast("Not connected to Cloud", 'error'); return; }
-            if (isSaving) return;
-            const btn = document.getElementById('btnSync'), orig = btn.innerHTML;
-            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Saving...</span>';
-            isSaving = true;
-            try { await addDoc(collection(db, 'artifacts', appId, 'users', firebaseUserId, 'loadsheets'), serializeFormData()); showToast("Data synced to Cloud!"); }
-            catch (err) { console.error(err); showToast("Sync failed", 'error'); }
-            finally { btn.innerHTML = orig; isSaving = false; }
+            if (this.disabled) return;
+            
+            const originalHtml = this.innerHTML;
+            this.disabled = true; // Langsung mematikan tombol mencegah freeze peramban
+            this.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Saving...</span>';
+            
+            try { 
+                await addDoc(collection(db, 'artifacts', appId, 'users', firebaseUserId, 'loadsheets'), serializeFormData()); 
+                showToast("Data saved to Cloud!"); 
+            } catch (err) { 
+                console.error(err); 
+                showToast("Save failed", 'error'); 
+            } finally { 
+                this.innerHTML = originalHtml; 
+                this.disabled = false; 
+            }
         });
 
         document.getElementById('btnHistory').addEventListener('click', async () => {
