@@ -728,12 +728,16 @@
                 <div class="p-5" id="recordDetailBody">
                     <!-- Injected via JS -->
                 </div>
-                <div class="p-4 bg-slate-800/50 border-t border-[#334155] flex justify-between gap-3">
-                    <button type="button" id="btnDeleteRecordAction" onclick="deleteSelectedRecord()" class="flex-1 bg-red-900/40 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-lg py-2.5 text-sm font-bold transition-colors flex justify-center items-center gap-2">
+                <div class="p-4 bg-slate-800/50 border-t border-[#334155] grid grid-cols-2 gap-3">
+                    <button type="button" id="btnDeleteRecordAction" onclick="deleteSelectedRecord()" class="bg-red-900/40 text-red-400 hover:bg-red-600 hover:text-white border border-red-500/30 rounded-lg py-2.5 text-sm font-bold transition-colors flex justify-center items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         Delete
                     </button>
-                    <button type="button" id="btnLoadRecordAction" onclick="loadSelectedRecord()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-2.5 text-sm font-bold transition-colors flex justify-center items-center gap-2">
+                    <button type="button" id="btnDuplicateRecordAction" onclick="duplicateSelectedRecord()" class="bg-emerald-900/40 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-500/30 rounded-lg py-2.5 text-sm font-bold transition-colors flex justify-center items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Duplicate
+                    </button>
+                    <button type="button" id="btnLoadRecordAction" onclick="loadSelectedRecord()" class="col-span-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-2.5 text-sm font-bold transition-colors flex justify-center items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         Load Record
                     </button>
@@ -1658,6 +1662,38 @@
                 } finally {
                     const btn = document.getElementById('btnDeleteRecordAction');
                     btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Delete`; 
+                    btn.disabled = false;
+                }
+            }
+        };
+
+        window.duplicateSelectedRecord = async function() {
+            if(window._selectedSheetIdx === undefined || !firebaseUserId) return;
+            const originalData = window._cachedSheets[window._selectedSheetIdx];
+            
+            try {
+                const btn = document.getElementById('btnDuplicateRecordAction');
+                btn.innerHTML = "Duplicating..."; 
+                btn.disabled = true;
+                
+                // Menyalin data dan mengganti timestamp dengan waktu sekarang
+                const duplicatedData = { ...originalData };
+                delete duplicatedData.id; // Hapus ID asli agar Firebase membuat dokumen baru
+                duplicatedData.timestamp = Date.now();
+                duplicatedData.savedBy = document.getElementById('displayActiveUser').innerText;
+                
+                // Simpan duplikat sebagai data baru ke database
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'loadsheets'), duplicatedData);
+                
+                showToast("Record duplicated successfully!", "success");
+                window.closeRecordDetail();
+                document.getElementById('btnHistory').click(); // Refresh ulang history otomatis
+            } catch(e) {
+                showToast("Failed to duplicate record", "error");
+            } finally {
+                const btn = document.getElementById('btnDuplicateRecordAction');
+                if (btn) {
+                    btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> Duplicate`; 
                     btn.disabled = false;
                 }
             }
