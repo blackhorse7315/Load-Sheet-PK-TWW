@@ -1490,8 +1490,8 @@
         function serializeFormData() {
             const data = {
                 timestamp: Date.now(), flightDate: document.getElementById('flightDate').value, noreg: document.getElementById('noreg').value,
-                acType: document.getElementById('acType').value, customer: document.getElementById('customer').value, depFrom: document.getElementById('depFrom').value,
-                arrDest: document.getElementById('arrDest').value, flightTime: document.getElementById('flightTime').value, fob: document.getElementById('fob').value,
+                acType: document.getElementById('acType').value, customer: document.getElementById('customer').value, depFrom: document.getElementById('depFrom').value.toUpperCase(),
+                arrDest: document.getElementById('arrDest').value.toUpperCase(), flightTime: document.getElementById('flightTime').value, fob: document.getElementById('fob').value,
                 startFuel: document.getElementById('startFuel').value, emptyWeight: document.getElementById('emptyWeight').value, emptyArm: document.getElementById('emptyArm').value,
                 toolsWt: document.getElementById('toolsWt').value, crew: [], pax: []
             };
@@ -1582,7 +1582,7 @@
                             <div class="text-xs text-gray-400 font-bold mb-3 uppercase">${s.customer||'No Customer'}</div>
                             <div class="text-sm text-gray-200 font-mono flex items-center gap-2 bg-[#0f1522] p-2 rounded">
                                 <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span class="font-bold tracking-widest">${(s.depFrom||'?')+' ➔ '+(s.arrDest||'?')}</span>
+                                <span class="font-bold tracking-widest">${(s.depFrom||'?').toUpperCase()} ➔ ${(s.arrDest||'?').toUpperCase()}</span>
                             </div>
                         </div>
                     </div>`;
@@ -1608,7 +1608,7 @@
                     <div class="text-xs text-gray-400 mt-1">${fd}</div>
                 </div>
                 <div class="bg-[#0f1522] rounded p-4 border border-[#334155] text-sm font-mono text-gray-300">
-                    <div class="mb-2"><span class="text-gray-500">Route:</span> <span class="font-bold text-white">${s.depFrom||'?'} ➔ ${s.arrDest||'?'}</span></div>
+                    <div class="mb-2"><span class="text-gray-500">Route:</span> <span class="font-bold text-white">${(s.depFrom||'?').toUpperCase()} ➔ ${(s.arrDest||'?').toUpperCase()}</span></div>
                     <div><span class="text-gray-500">Cust:</span> ${s.customer||'-'}</div>
                 </div>
             `;
@@ -1681,7 +1681,7 @@
                 
                 document.getElementById('pdf-out-noreg').innerText = v('noreg')||'_____';
                 document.getElementById('pdf-out-actype').innerText = v('acType'); document.getElementById('pdf-out-customer').innerText = v('customer');
-                document.getElementById('pdf-out-from').innerText = v('depFrom'); document.getElementById('pdf-out-dest').innerText = v('arrDest');
+                document.getElementById('pdf-out-from').innerText = v('depFrom').toUpperCase(); document.getElementById('pdf-out-dest').innerText = v('arrDest').toUpperCase();
                 document.getElementById('pdf-out-flighttime').innerText = v('flightTime'); document.getElementById('pdf-out-fob').innerText = v('fob')||'0';
                 document.getElementById('pdf-out-startfuel').innerText = v('startFuel')||'0'; document.getElementById('pdf-out-tripfuel').innerText = v('tripFuel')||'0';
                 document.getElementById('pdf-out-landingfuel').innerText = v('landingFuel')||'0';
@@ -1813,7 +1813,8 @@
                 const sSign = document.getElementById('pdf-out-sic-sign');
                 if (sN) { const b = await fetchImageAsBase64(globalPilots.find(x=>x.name===sN)?.sign); sSign.src=b||ep; sSign.style.display=b?'block':'none'; } else { sSign.src=ep; sSign.style.display='none'; }
 
-                const opt = { margin: [5,5,5,5], filename: `Loadsheet_${v('noreg')}_${v('flightDate')}.pdf`, image: {type:'jpeg',quality:1}, html2canvas: {scale:2,useCORS:true}, jsPDF: {unit:'mm',format:'a4',orientation:'portrait'} };
+                const routeStr = `${v('depFrom').toUpperCase()}-${v('arrDest').toUpperCase()}`;
+                const opt = { margin: [5,5,5,5], filename: `Loadsheet_${v('noreg')}_${routeStr}_${v('flightDate')}.pdf`, image: {type:'jpeg',quality:1}, html2canvas: {scale:2,useCORS:true}, jsPDF: {unit:'mm',format:'a4',orientation:'portrait'} };
                 await html2pdf().set(opt).from(document.getElementById('pdf-report')).save().catch(e=> { throw new Error(e.message); });
             } catch (err) { alert("PDF Error: " + err); } finally { btn.innerHTML = orig; btn.disabled=false; }
         });
