@@ -42,7 +42,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #0f1522;
             color: #e2e8f0;
-            overflow-x: hidden;
+            overflow-x: clip;
         }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
@@ -767,6 +767,7 @@
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         let firebaseUserId = null;
         let isSaving = false;
+        let currentRecordId = null;
 
         // Global Variables for Admin Data
         let globalUsers = [];
@@ -1520,6 +1521,7 @@
         window.deserializeFormData = deserializeFormData;
 
         document.getElementById('btnNewData').addEventListener('click', () => {
+            currentRecordId = null;
             document.getElementById('wbForm').reset();
             document.getElementById('flightDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('emptyWeight').value = "4853.80"; document.getElementById('emptyArm').value = "6,070";
@@ -1540,9 +1542,17 @@
             try { 
                 const dataToSave = serializeFormData();
                 dataToSave.savedBy = document.getElementById('displayActiveUser').innerText; // Menyimpan info siapa yang membuat
-                // Mengubah path penyimpanan agar bersifat global untuk perusahaan, tidak terikat pada perangkat (browser)
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'loadsheets'), dataToSave); 
-                showToast("Data saved to Cloud!"); 
+                
+                if (currentRecordId) {
+                    // Update data yang sudah ada (menimpa)
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'loadsheets', currentRecordId), dataToSave);
+                    showToast("Data updated in Cloud!");
+                } else {
+                    // Simpan sebagai rekaman baru
+                    const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'loadsheets'), dataToSave); 
+                    currentRecordId = docRef.id;
+                    showToast("Data saved to Cloud!"); 
+                }
             } catch (err) { 
                 console.error(err); 
                 showToast("Save failed", 'error'); 
@@ -1655,6 +1665,7 @@
 
         window.loadSelectedRecord = function() {
             if(window._selectedSheetIdx === undefined) return;
+            currentRecordId = window._cachedSheets[window._selectedSheetIdx].id;
             deserializeFormData(window._cachedSheets[window._selectedSheetIdx]);
             window.closeRecordDetail();
             window.scrollTo({ top: 0, behavior: 'smooth' });
